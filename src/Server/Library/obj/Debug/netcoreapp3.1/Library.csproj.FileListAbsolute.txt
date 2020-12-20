@@ -1,0 +1,12 @@
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\bin\Debug\netcoreapp3.1\Library.deps.json
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\bin\Debug\netcoreapp3.1\Library.runtimeconfig.json
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\bin\Debug\netcoreapp3.1\Library.runtimeconfig.dev.json
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\bin\Debug\netcoreapp3.1\Library.dll
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\bin\Debug\netcoreapp3.1\Library.pdb
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\obj\Debug\netcoreapp3.1\Library.csprojAssemblyReference.cache
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\obj\Debug\netcoreapp3.1\Library.AssemblyInfoInputs.cache
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\obj\Debug\netcoreapp3.1\Library.AssemblyInfo.cs
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\obj\Debug\netcoreapp3.1\Library.csproj.CoreCompileInputs.cache
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\obj\Debug\netcoreapp3.1\Library.dll
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\obj\Debug\netcoreapp3.1\Library.pdb
+D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\Library\obj\Debug\netcoreapp3.1\Library.genruntimeconfig.cache
