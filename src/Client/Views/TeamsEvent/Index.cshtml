@@ -1,0 +1,76 @@
+﻿@model Client.Models.Team
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    int id = @ViewBag.Event.EventId;
+}
+
+<h1>Equipas da Competição</h1>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h5>Nome do Evento</h5>
+            <p>@ViewBag.Event.EventName</p>
+        </div>
+        <div class="col-md-4">
+            <h5>Data de Inicio</h5>
+            <p>@ViewBag.Event.DateOfStart</p>
+        </div>
+        <div class="col-md-4">
+            <h5>Data de Fim</h5>
+            <p>@ViewBag.Event.DateOfEnd</p>
+        </div>
+    </div>
+    <div class="row" style="margin-top:1vh">
+        <div class="form-group col-md-8">
+            <form asp-controller="Events" asp-action="AddTeam">
+                <label class="control-label">Equipas</label>
+                <input type="hidden" asp-for="@id" />
+                <select asp-for="TeamId"
+                        asp-items="@(new SelectList(@ViewBag.Teams,"TeamId","TeamName"))">
+                    <option>Please select one</option>
+                </select>
+                <input type="submit" value="Adicionar Equipa" class="btn btn-success" />
+            </form>
+        </div>
+    </div>
+    <div class="row" style="margin-top:1vh">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Nome da Equipa
+                    </th>
+                    <th>
+                        Ranking da Equipa
+                    </th>
+                    <th>
+                        Nacionalidade
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Team item in ViewBag.Event.Teams)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TeamName)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TeamRanking)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.TeamNationality)
+                        </td>
+                        <td>
+                            <a asp-controller="Events" asp-action="RemoveTeam" asp-route-id="@item.TeamId" class="btn btn-danger">Remover</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

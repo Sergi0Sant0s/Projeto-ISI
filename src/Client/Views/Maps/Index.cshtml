@@ -1,0 +1,42 @@
+﻿@model IEnumerable<Client.Models.Map>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Mapas</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Novo Mapa</a>
+</p>
+<div class="row">
+    <div class="col-md-4">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Nome
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.MapId" class="btn btn-primary">Editar</a>
+                            <a asp-action="Delete" asp-route-id="@item.MapId" class="btn btn-danger">Eliminar</a>
+                            <a asp-action="Details" asp-route-id="@item.MapId" class="btn btn-secondary">Detalhes</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+

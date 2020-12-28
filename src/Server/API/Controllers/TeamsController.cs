@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DATA.Context;
 using DATA.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize("Bearer")]
+    [Route("[controller]")]
     [ApiController]
+    [EnableCors]
     public class TeamsController : ControllerBase
     {
         private readonly MyContext _context;
@@ -22,6 +26,7 @@ namespace Server.Controllers
         }
 
         // GET: Teams
+        [Authorize("Bearer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
         {
@@ -29,6 +34,7 @@ namespace Server.Controllers
         }
 
         // GET: Teams/5
+        [Authorize("Bearer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Team>> GetTeam(int id)
         {
@@ -44,11 +50,11 @@ namespace Server.Controllers
 
         // PUT: Teams/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTeam(int id, Team team)
         {
-            var temp = string.Empty;
-            /*if (id != team.TeamId)
+            if (id != team.TeamId)
             {
                 return BadRequest();
             }
@@ -70,12 +76,12 @@ namespace Server.Controllers
                     throw;
                 }
             }
-            */
             return NoContent();
         }
 
         // POST: Teams
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<Team>> PostTeam(Team @team)
         {
@@ -86,6 +92,7 @@ namespace Server.Controllers
         }
 
         // DELETE: Teams/5
+        [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(int id)
         {

@@ -1,11 +1,13 @@
 ﻿using DATA.Entities;
+using DATA.Jwt;
 using Microsoft.EntityFrameworkCore;
 
 namespace DATA.Context
 {
-    
+
     public class MyContext : DbContext
     {
+
         public MyContext(DbContextOptions<MyContext> options) : base(options)
         {
         }
@@ -17,6 +19,7 @@ namespace DATA.Context
         public DbSet<MapOfGame> MapOfGame { get; set; }
         public DbSet<StatPlayerOnMap> StatPlayerOnMap { get; set; }
         public DbSet<Event> Events { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -44,6 +47,11 @@ namespace DATA.Context
             .WithMany(b => b.GamesTeamWinner)
             .HasForeignKey(p => p.TeamWinnerId)
             .HasPrincipalKey(c => c.TeamId);
+
+            modelBuilder.Entity<User>().HasData(new User[] {
+                new User() {UserId = 1, Username = "Admin", Password = "Admin",Email="qwerty@qwerty.qwerty", Role = UserRoles.Admin },
+                new User() {UserId = 2, Username = "User", Password = "User",Email="qwerty@qwerty.qwerty", Role = UserRoles.User } 
+            });
         }
     }
 }

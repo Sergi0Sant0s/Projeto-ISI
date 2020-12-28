@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DATA.Context;
 using DATA.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize("Bearer")]
+    [Route("[controller]")]
     [ApiController]
+    [EnableCors]
     public class MapsController : ControllerBase
     {
         private readonly MyContext _context;
@@ -21,14 +25,16 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: api/Maps
+        // GET: Maps
+        [Authorize("Bearer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Map>>> GetMaps()
         {
             return await _context.Maps.ToListAsync();
         }
 
-        // GET: api/Maps/5
+        // GET: Maps/5
+        [Authorize("Bearer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Map>> GetMap(int id)
         {
@@ -42,8 +48,9 @@ namespace Server.Controllers
             return map;
         }
 
-        // PUT: api/Maps/5
+        // PUT: Maps/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMap(int id, Map map)
         {
@@ -73,8 +80,9 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Maps
+        // POST: Maps
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<Map>> PostMap(Map map)
         {
@@ -84,7 +92,8 @@ namespace Server.Controllers
             return CreatedAtAction("GetMap", new { id = map.MapId }, map);
         }
 
-        // DELETE: api/Maps/5
+        // DELETE: Maps/5
+        [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMap(int id)
         {

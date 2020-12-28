@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DATA.Context;
 using DATA.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Authorize("Bearer")]
+    [Route("[controller]")]
     [ApiController]
+    [EnableCors]
     public class GamesController : ControllerBase
     {
         private readonly MyContext _context;
@@ -21,14 +25,16 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: api/Games
+        // GET: Games
+        [Authorize("Bearer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
             return await _context.Games.ToListAsync();
         }
 
-        // GET: api/Games/5
+        // GET: Games/5
+        [Authorize("Bearer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Game>> GetGame(int id)
         {
@@ -42,8 +48,18 @@ namespace Server.Controllers
             return game;
         }
 
-        // PUT: api/Games/5
+        // GET: Games/GamesByEventId/5
+        [Authorize("Bearer")]
+        [HttpGet("GamesByEventId/{id}")]
+        public async Task<ActionResult<List<Game>>> GamesByEventId(int id)
+        {
+            return await _context.Games.Where(b => b.EventId == id).ToListAsync();
+
+        }
+
+        // PUT: Games/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGame(int id, Game game)
         {
@@ -73,18 +89,27 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Games
+        // POST: Games
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<Game>> PostGame(Game game)
         {
-            _context.Games.Add(game);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Games.Add(game);
+                await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetGame", new { id = game.GameId }, game);
+                return CreatedAtAction("GetGame", new { id = game.GameId }, game);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
 
-        // DELETE: api/Games/5
+        // DELETE: Games/5
+        [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame(int id)
         {

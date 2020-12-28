@@ -8,6 +8,12 @@ namespace DATA.Entities
 {
     public class Event
     {
+        public Event()
+        {
+            Teams = new List<Team>();
+            Games = new List<Game>();
+        }
+
         [Key]
         [Required]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]

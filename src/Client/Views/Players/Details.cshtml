@@ -1,0 +1,68 @@
+﻿@model Client.Models.Player
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Detalhes do Jogador</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <div class="col-md-4">
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Name)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Name)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Nickname)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Nickname)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Age)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Age)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Nationality)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Nationality)
+            </dd>
+        </div>
+        <div class="col-md-2"></div>
+        <div class="col-md-6">
+            <h3>Redes Sociais</h3>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Facebook)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Facebook)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Twitter)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Twitter)
+            </dd>
+            <dt class="col-sm-2">
+                @Html.DisplayNameFor(model => model.Instagram)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Instagram)
+            </dd>
+        </div>
+        
+        
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.PlayerId" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-info">Voltar para a listagem</a>
+</div>

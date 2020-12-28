@@ -1,0 +1,36 @@
+﻿@model Client.Models.Team
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Detalhes Equipa</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Nome da Equipa
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TeamName)
+        </dd>
+        <dt class="col-sm-2">
+            Ranking da Equipa
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TeamRanking)
+        </dd>
+        <dt class="col-sm-2">
+            Nacionalidade
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TeamNationality)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.TeamId" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-info">Voltar para a listagem</a>
+</div>

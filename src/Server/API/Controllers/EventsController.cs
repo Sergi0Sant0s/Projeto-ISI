@@ -7,11 +7,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DATA.Context;
 using DATA.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
+using DATA.Jwt;
 
 namespace Server.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize("Bearer")]
     public class EventsController : ControllerBase
     {
         private readonly MyContext _context;
@@ -23,13 +27,16 @@ namespace Server.Controllers
 
         // GET: Events
         [HttpGet]
+        [Authorize("Bearer")]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
         {
             return await _context.Events.ToListAsync();
         }
 
         // GET: Events/5
+
         [HttpGet("{id}")]
+        [Authorize("Bearer")]
         public async Task<ActionResult<Event>> GetEvent(int id)
         {
             var @event = await _context.Events.FindAsync(id);
@@ -42,9 +49,38 @@ namespace Server.Controllers
             return @event;
         }
 
+        [HttpGet("GetTeamsByEventId/{id}")]
+        [Authorize("Bearer")]
+        public async Task<ICollection<Team>> GetTeamsByEvent(int id)
+        {
+            var teams = _context.Events.FirstOrDefault(a => a.EventId == id).Teams;
+
+            return teams;
+        }
+
+        [HttpPost("AddTeamToEvent")]
+        [Authorize("Bearer")]
+        public async Task<bool> AddTeamToEvent(int idEvent, int idTeam)
+        {
+            try
+            {
+                var ev = await _context.Events.FindAsync(idEvent);
+                var tm = await _context.Teams.FindAsync(idTeam);
+                ev.Teams.Add(tm);
+                tm.Events.Add(ev);
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         // PUT: Events/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPut("{id}")]
+        [Authorize("Bearer")]
         public async Task<IActionResult> PutEvent(int id, Event @event)
         {
             if (id != @event.EventId)
@@ -76,6 +112,7 @@ namespace Server.Controllers
         // POST: Events
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
         [HttpPost]
+        [Authorize("Bearer")]
         public async Task<ActionResult<Event>> PostEvent(Event @event)
         {
             _context.Events.Add(@event);
@@ -86,6 +123,7 @@ namespace Server.Controllers
 
         // DELETE: Events/5
         [HttpDelete("{id}")]
+        [Authorize("Bearer")]
         public async Task<IActionResult> DeleteEvent(int id)
         {
             var @event = await _context.Events.FindAsync(id);

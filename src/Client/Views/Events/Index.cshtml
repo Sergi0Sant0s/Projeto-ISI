@@ -1,0 +1,50 @@
+﻿@model IEnumerable<Client.Models.Event>
+
+@{
+    ViewData["Title"] = "Competições";
+}
+
+<h1>Competições</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Nova competição</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nome
+            </th>
+            <th>
+                Data de Inicio
+            </th>
+            <th>
+                Data de Fim
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.EventName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfStart)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DateOfEnd)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.EventId" class="btn btn-primary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@item.EventId" class="btn btn-danger">Eliminar</a>
+                <a asp-action="Details" asp-route-id="@item.EventId" class="btn btn-secondary">Detalhes</a>
+                <a asp-action="Games" asp-route-id="@item.EventId" class="btn btn-secondary">Jogos</a>
+                <a asp-action="Teams" asp-route-id="@item.EventId" class="btn btn-secondary">Equipas</a>
+
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

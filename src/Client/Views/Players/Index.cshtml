@@ -1,0 +1,54 @@
+﻿@model IEnumerable<Client.Models.Player>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Jogadores</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Novo Jogador</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nome
+            </th>
+            <th>
+                Nick Name
+            </th>
+            <th>
+                Idade
+            </th>
+            <th>
+                Nacionalidade
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nickname)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Age)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Nationality)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.PlayerId" class="btn btn-primary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@item.PlayerId" class="btn btn-danger">Eliminar</a>
+                <a asp-action="Details" asp-route-id="@item.PlayerId" class="btn btn-secondary">Detalhes</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

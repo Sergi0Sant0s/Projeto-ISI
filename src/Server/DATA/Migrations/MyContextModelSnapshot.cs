@@ -222,6 +222,52 @@ namespace DATA.Migrations
                     b.ToTable("Teams");
                 });
 
+            modelBuilder.Entity("DATA.Entities.User", b =>
+                {
+                    b.Property<int>("UserId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .UseIdentityColumn();
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Role")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("UserId");
+
+                    b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = 1,
+                            Email = "qwerty@qwerty.qwerty",
+                            Password = "Admin",
+                            Role = "Admin",
+                            Username = "Admin"
+                        },
+                        new
+                        {
+                            UserId = 2,
+                            Email = "qwerty@qwerty.qwerty",
+                            Password = "User",
+                            Role = "User",
+                            Username = "User"
+                        });
+                });
+
             modelBuilder.Entity("EventTeam", b =>
                 {
                     b.Property<int>("EventsEventId")

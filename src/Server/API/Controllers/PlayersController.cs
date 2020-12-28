@@ -7,10 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DATA.Context;
 using DATA.Entities;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Server.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class PlayersController : ControllerBase
     {
@@ -21,14 +22,16 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: api/Players
+        // GET: Players
+        [Authorize("Bearer")]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Player>>> GetPlayers()
         {
             return await _context.Players.ToListAsync();
         }
 
-        // GET: api/Players/5
+        // GET: Players/5
+        [Authorize("Bearer")]
         [HttpGet("{id}")]
         public async Task<ActionResult<Player>> GetPlayer(int id)
         {
@@ -42,8 +45,9 @@ namespace Server.Controllers
             return player;
         }
 
-        // PUT: api/Players/5
+        // PUT: Players/5
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutPlayer(int id, Player player)
         {
@@ -73,8 +77,9 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Players
+        // POST: Players
         // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<Player>> PostPlayer(Player player)
         {
@@ -84,7 +89,8 @@ namespace Server.Controllers
             return CreatedAtAction("GetPlayer", new { id = player.PlayerId }, player);
         }
 
-        // DELETE: api/Players/5
+        // DELETE: Players/5
+        [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeletePlayer(int id)
         {

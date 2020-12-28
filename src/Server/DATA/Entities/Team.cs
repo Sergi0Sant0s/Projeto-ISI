@@ -8,6 +8,15 @@ namespace DATA.Entities
 {
     public class Team
     {
+        public Team()
+        {
+            Events = new List<Event>();
+            GamesTeamA = new List<Game>();
+            GamesTeamB = new List<Game>();
+            GamesTeamWinner = new List<Game>();
+            StatPlayerOnMap = new List<StatPlayerOnMap>();
+        }
+
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int TeamId { get; set; }

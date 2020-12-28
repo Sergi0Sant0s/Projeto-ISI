@@ -1,0 +1,80 @@
+﻿@model Client.Models.Event
+@{
+    ViewData["Title"] = "Detalhes da Competição";
+}
+
+<h1>Detalhes da Competição</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            Nome da Competição
+        </dt>
+        <dd class = "col-sm-10">
+            @Model.EventName
+        </dd>
+        <dt class = "col-sm-2">
+            Data de Inicio
+        </dt>
+        <dd class = "col-sm-10">
+            @Model.DateOfStart
+        </dd>
+        <dt class = "col-sm-2">
+            Data de Fim
+        </dt>
+        <dd class = "col-sm-10">
+            @Model.DateOfEnd
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.EventId" class="btn btn-primary">Editar</a>
+    <a asp-action="Index" class="btn btn-info">Voltar para a listagem</a>
+</div>
+<h1>Jogos</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Data do Jogo
+            </th>
+            <th>
+                Equipa A
+            </th>
+            <th>
+                Equipa B
+            </th>
+            <th>
+                Equipa Vencedora
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Games)
+        {
+        <tr>
+            <td>
+                @item.GameDate
+            </td>
+            <td>
+                @item.TeamA.TeamName
+            </td>
+            <td>
+                @item.TeamB.TeamName
+            </td>
+            <td>
+                @if (@item.TeamWinner != null) {
+                    @item.TeamWinner.TeamName;
+                }
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.GameId" class="btn btn-primary">Editar</a>
+                <a asp-action="Delete" asp-route-id="@item.GameId" class="btn btn-danger">Eliminar</a>
+                <a asp-action="Details" asp-route-id="@item.GameId" class="btn btn-secondary">Detalhes</a>
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>
