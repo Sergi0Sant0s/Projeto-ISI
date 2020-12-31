@@ -1,6 +1,7 @@
 ﻿using DATA.Entities;
 using DATA.Jwt;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace DATA.Context
 {
@@ -45,12 +46,48 @@ namespace DATA.Context
             modelBuilder.Entity<Game>()
             .HasOne(p => p.TeamWinner)
             .WithMany(b => b.GamesTeamWinner)
+            .IsRequired(false)
             .HasForeignKey(p => p.TeamWinnerId)
+            .HasPrincipalKey(c => c.TeamId);
+
+            modelBuilder.Entity<Player>()
+            .HasOne(p => p.Team)
+            .WithMany(b => b.Players)
+            .HasForeignKey(p => p.TeamId)
             .HasPrincipalKey(c => c.TeamId);
 
             modelBuilder.Entity<User>().HasData(new User[] {
                 new User() {UserId = 1, Username = "Admin", Password = "Admin",Email="qwerty@qwerty.qwerty", Role = UserRoles.Admin },
                 new User() {UserId = 2, Username = "User", Password = "User",Email="qwerty@qwerty.qwerty", Role = UserRoles.User } 
+            });
+
+
+            modelBuilder.Entity<Map>().HasData(new Map[]{
+                new Map(){ MapId=1, Description = "Inferno"},
+                new Map(){ MapId=2, Description = "Vertigo"},
+                new Map(){ MapId=3, Description = "Dust2"},
+                new Map(){ MapId=4, Description = "Overpass"},
+                new Map(){ MapId=5, Description = "Train"}
+                });
+
+            modelBuilder.Entity<Player>().HasData(new Player[]{
+                new Player(){PlayerId=1,Name = "Gabriel Toledo", Nationality = "Brazil", Age = 29, Nickname = "FalleN"},
+                new Player(){PlayerId=2,Name = "Vito Giuseppe", Nationality = "Brazil", Age = 28, Nickname = "kNgV-"},
+                new Player(){PlayerId=3,Name = "Nicolai Reedtz", Nationality = "Dinamarca", Age = 25, Nickname = "device"},
+                new Player(){PlayerId=4,Name = "Peter Rasmussen", Nationality = "Dinamarca", Age = 27, Nickname = "dupreeh"},
+                new Player(){PlayerId=5, Name = "Lukas Rossander", Nationality = "Dinamarca", Age = 25, Nickname = "gla1ve"}
+                });
+
+            modelBuilder.Entity<Team>().HasData(new Team[]{
+                new Team(){TeamId=1, TeamName = "Mibr", TeamNationality = "Brazil", TeamRanking = 21},
+                new Team(){TeamId=2, TeamName = "Astralis", TeamNationality = "Dinamarca", TeamRanking = 1},
+                new Team(){TeamId=3, TeamName = "Natus Vincere", TeamNationality = "Russia", TeamRanking = 3},
+                new Team(){TeamId=4, TeamName = "OG", TeamNationality = "Europa", TeamRanking = 7},
+                new Team(){TeamId=5, TeamName = "Mousesports", TeamNationality = "Europa", TeamRanking = 9}
+                });
+
+            modelBuilder.Entity<Event>().HasData(new Event[]{
+                new Event() { EventId = 1, EventName = "Blast New York", DateOfStart = DateTime.Now, DateOfEnd = DateTime.Now.AddDays(5) }
             });
         }
     }

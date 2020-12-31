@@ -122,12 +122,25 @@ namespace Server.Controllers
         [HttpGet("roles")]
         public async Task<ActionResult<object>> GetRoles()
         {
-            return new { UserRoles.Admin, UserRoles.User };
+            return new string[] { UserRoles.Admin.ToString(), UserRoles.User.ToString() };
         }
 
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.UserId == id);
+        }
+
+        private string CheckUserRoles(string uRoles)
+        {
+            switch (uRoles.ToUpper())
+            {
+                case "ADMIN":
+                    return UserRoles.Admin;
+                case "User":
+                    return UserRoles.User;
+                default:
+                    return null;
+            }
         }
     }
 }

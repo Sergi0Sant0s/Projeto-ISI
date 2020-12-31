@@ -43,11 +43,12 @@ namespace DATA.Entities
         public int? TeamWinnerId { get; set; }
         [JsonIgnore]
         [ForeignKey("TeamWinnerId")]
-        public Team? TeamWinner { get; set; }
+        public Team TeamWinner { get; set; }
 
 
         //MAPS OF GAME
         [JsonIgnore]
         public virtual ICollection<MapOfGame> MapOfGame { get; set; }
+        public virtual ICollection<StatPlayerOnMap> StatPlayerOnMap { get; set; }
     }
 }

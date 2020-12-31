@@ -32,8 +32,14 @@ namespace DATA.Entities
         public string Twitter { get; set; }
         public string Instagram { get; set; }
 
-
         /* RELATIONSHIP */
+        //TEAM
+        public int? TeamId { get; set; }
+        [JsonIgnore]
+        [ForeignKey("TeamId")]
+        public Team Team { get; set; }
+
+        //Stat Player On Map
         [JsonIgnore]
         public virtual ICollection<StatPlayerOnMap> StatPlayerOnMap { get; set; }
     }

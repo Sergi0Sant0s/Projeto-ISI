@@ -14,15 +14,19 @@ namespace Client.Controllers
     public class TeamsController : Controller
     {
         private readonly TeamsRepository contextTeams;
+        private readonly PlayersRepository contextPlayers;
 
-        public TeamsController(IConfiguration config)
+        public TeamsController()
         {
-            contextTeams = new TeamsRepository(config);
+            contextTeams = new TeamsRepository();
+            contextPlayers = new PlayersRepository();
         }
 
         // GET: Teams
         public async Task<IActionResult> Index()
         {
+            if (Program.Token == null || Program.Authentication == null)
+                return RedirectToAction("Home/Index");
             return View(await contextTeams.GetAllTeams());
         }
 
@@ -62,6 +66,90 @@ namespace Client.Controllers
                 return RedirectToAction(nameof(Index));
             }
             return View(team);
+        }
+
+        public IActionResult Players(int? id)
+        {
+            var tm = contextTeams.GetTeamById(id);
+            var players = contextPlayers.GetAllPlayers().Result.Where(x => x.TeamId == null || x.TeamId != tm.Result.TeamId);
+            if (tm == null || players == null)
+                NotFound();
+            //
+            ViewBag.Team = tm.Result;
+            ViewBag.PlayersOnTeam = contextPlayers.GetAllPlayers().Result.Where(x => x.TeamId != null && x.TeamId == tm.Result.TeamId);
+            ViewBag.Players = players;
+            //
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddPlayer([Bind("id,TeamId")] int? id, int? PlayerId)
+        {
+            Team tm = null;
+            Player pl = null;
+
+
+            if (id == null && PlayerId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            try
+            {
+                tm = await contextTeams.GetTeamById(id);
+                pl = await contextPlayers.GetPlayerById(PlayerId);
+                if (tm != null && pl != null)
+                {
+                    if (!await contextTeams.AddPlayerToTeam(tm, pl))
+                    {
+                        return RedirectToAction("Players", new { id = id });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                View("Error", new Error() { Title = "Adicionar jogador da equipa", Message = e.Message });
+            }
+
+            if (tm == null || pl == null)
+            {
+                return View(NotFound());
+            }
+            return RedirectToAction("Players", new { id = id });
+        }
+
+        public async Task<IActionResult> RemovePlayer(int? id, int? PlayerId)
+        {
+            Team tm = null;
+            Player pl = null;
+
+
+            if (id == null && PlayerId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            try
+            {
+                tm = await contextTeams.GetTeamById(id);
+                pl = await contextPlayers.GetPlayerById(PlayerId);
+                if (tm != null && pl != null)
+                {
+                    if (!await contextTeams.RemovePlayerFromTeam(tm, pl))
+                    {
+                        return RedirectToAction("Players", new { id = id });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                View("Error", new Error() { Title = "Remover jogador da equipa", Message = e.Message });
+            }
+
+            if (tm == null || pl == null)
+            {
+                return View(NotFound());
+            }
+            return RedirectToAction("Players", new { id = id });
         }
 
         // GET: Teams/Edit/5

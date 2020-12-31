@@ -38,6 +38,7 @@
                 @Html.DisplayFor(modelItem => item.TeamNationality)
             </td>
             <td>
+                <a asp-action="Players" asp-route-id="@item.TeamId" class="btn btn-primary">Jogadores</a>
                 <a asp-action="Edit" asp-route-id="@item.TeamId" class="btn btn-primary">Editar</a>
                 <a asp-action="Delete" asp-route-id="@item.TeamId" class="btn btn-danger">Eliminar</a>
                 <a asp-action="Details" asp-route-id="@item.TeamId" class="btn btn-secondary">Detalhes</a>

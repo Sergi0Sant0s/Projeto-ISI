@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,18 +11,14 @@ using System.Threading.Tasks;
 namespace Client.Repository
 {
     public class TeamsRepository
-    {
-        private readonly IConfiguration _config;
-
+    { 
         const string get_method = "Teams";
         const string post_method = "Teams";
+        const string AddPlayerToTeam_method = "Teams/AddPlayerToTeam/";
+        const string RemovePlayerFromTeam_method = "Teams/RemovePlayerFromTeam/";
         const string put_method = "Teams";
         const string delete_method = "Teams";
 
-        public TeamsRepository(IConfiguration config)
-        {
-            this._config = config;
-        }
 
         public async Task<List<Team>> GetAllTeams()
         {
@@ -149,6 +144,80 @@ namespace Client.Repository
                 throw;
             }
             return tm;
+        }
+
+        public async Task<bool> AddPlayerToTeam(Team tm, Player pl)
+        {
+            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
+                return false;
+            try
+            {
+                using (var httpClientHandler = new HttpClientHandler())
+                {
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                    using (var client = new HttpClient(httpClientHandler))
+                    {
+                        client.BaseAddress = new Uri(Program.Url);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        //POST
+                        HttpResponseMessage response = await client.PostAsync(AddPlayerToTeam_method + $"?idTeam={tm.TeamId}&idPlayer={pl.PlayerId}", new StringContent(string.Empty));
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            //Added
+                            return true;
+                        }
+                        else
+                        {
+                            //ERROR
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> RemovePlayerFromTeam(Team tm, Player pl)
+        {
+            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
+                return false;
+            try
+            {
+                using (var httpClientHandler = new HttpClientHandler())
+                {
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                    using (var client = new HttpClient(httpClientHandler))
+                    {
+                        client.BaseAddress = new Uri(Program.Url);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        //POST
+                        HttpResponseMessage response = await client.PostAsync(RemovePlayerFromTeam_method + $"?idTeam={tm.TeamId}&idPlayer={pl.PlayerId}", new StringContent(string.Empty));
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            //Added
+                            return true;
+                        }
+                        else
+                        {
+                            //ERROR
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         public async Task<Team> EditTeam(Team editTeam, int? id)

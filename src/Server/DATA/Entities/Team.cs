@@ -31,6 +31,8 @@ namespace DATA.Entities
         [JsonIgnore]
         public virtual ICollection<StatPlayerOnMap> StatPlayerOnMap { get; set; }
         [JsonIgnore]
+        public virtual ICollection<Player> Players { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Event> Events { get; set; }
         [JsonIgnore]
         public virtual ICollection<Game> GamesTeamA { get; set; }

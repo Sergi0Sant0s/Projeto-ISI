@@ -15,14 +15,14 @@ namespace Client.Models
         public int GameId { get; set; }
         public DateTime GameDate { get; set; }
         public int EventId { get; set; }
-        public int TeamAid { get; set; }
-        public int TeamBid { get; set; }
+        public int TeamAId { get; set; }
+        public int TeamBId { get; set; }
         public int? TeamWinnerId { get; set; }
 
-        public virtual Event Event { get; set; }
-        public virtual Team TeamA { get; set; }
-        public virtual Team TeamB { get; set; }
-        public virtual Team TeamWinner { get; set; }
+        public Event Event { get; set; }
+        public Team TeamA { get; set; }
+        public Team TeamB { get; set; }
+        public Team? TeamWinner { get; set; }
         public virtual ICollection<MapOfGame> MapOfGames { get; set; }
     }
 }

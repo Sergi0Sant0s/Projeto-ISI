@@ -15,14 +15,16 @@ namespace Client.Controllers
     {
         private readonly MapsRepository contextMaps;
 
-        public MapsController(IConfiguration config)
+        public MapsController()
         {
-            contextMaps = new MapsRepository(config);
+            contextMaps = new MapsRepository();
         }
 
         // GET: Maps
         public async Task<IActionResult> Index()
         {
+            if (Program.Token == null || Program.Authentication == null)
+                return RedirectToAction("Home/Index");
             return View(await contextMaps.GetAllMaps());
         }
 

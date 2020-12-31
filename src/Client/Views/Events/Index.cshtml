@@ -25,26 +25,26 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EventName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateOfStart)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DateOfEnd)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.EventId" class="btn btn-primary">Editar</a>
-                <a asp-action="Delete" asp-route-id="@item.EventId" class="btn btn-danger">Eliminar</a>
-                <a asp-action="Details" asp-route-id="@item.EventId" class="btn btn-secondary">Detalhes</a>
-                <a asp-action="Games" asp-route-id="@item.EventId" class="btn btn-secondary">Jogos</a>
-                <a asp-action="Teams" asp-route-id="@item.EventId" class="btn btn-secondary">Equipas</a>
-
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateOfStart)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DateOfEnd)
+                </td>
+                <td>
+                    <a id="Games" onmousedown="VerifyGames(@item.EventId)" class="btn btn-primary">Jogos</a>
+                    <a id="Teams" onmousedown="VerifyTeams(@item.EventId)" class="btn btn-primary">Equipas</a>
+                    <a asp-action="Edit" asp-route-id="@item.EventId" class="btn btn-primary">Editar</a>
+                    <a asp-action="Delete" asp-route-id="@item.EventId" class="btn btn-danger">Eliminar</a>
+                    <a asp-action="Details" asp-route-id="@item.EventId" class="btn btn-secondary">Detalhes</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

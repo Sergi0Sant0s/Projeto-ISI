@@ -13,8 +13,8 @@ namespace Client.Repository
 {
     public class GamesRepository
     {
-        private readonly IConfiguration _config;
-        TeamsRepository teams;
+        TeamsRepository contextTeams;
+        EventsRepository contextEvents;
 
         const string get_method = "Games";
         const string getGamesByEvent_method = "Games/GamesByEventId";
@@ -22,10 +22,10 @@ namespace Client.Repository
         const string put_method = "Games";
         const string delete_method = "Games";
 
-        public GamesRepository(IConfiguration config)
+        public GamesRepository()
         {
-            this._config = config;
-            teams = new TeamsRepository(_config);
+            contextTeams = new TeamsRepository();
+            contextEvents = new EventsRepository();
         }
 
         public async Task<List<Game>> GetAllGames()
@@ -53,12 +53,6 @@ namespace Client.Repository
                             try
                             {
                                 gm = JsonConvert.DeserializeObject<List<Game>>(await response.Content.ReadAsStringAsync());
-                                foreach (var aux in gm)
-                                {
-                                    aux.TeamA = teams.GetTeamById(aux.TeamAid).Result;
-                                    aux.TeamB = teams.GetTeamById(aux.TeamBid).Result;
-                                    aux.TeamWinner = teams.GetTeamById(aux.TeamWinnerId).Result;
-                                }
                             }
                             catch (Exception)
                             {
@@ -103,9 +97,11 @@ namespace Client.Repository
                         {
                             //Finded
                             gm = JsonConvert.DeserializeObject<Game>(await response.Content.ReadAsStringAsync());
-                            gm.TeamA = teams.GetTeamById(gm.TeamAid).Result;
-                            gm.TeamB = teams.GetTeamById(gm.TeamBid).Result;
-                            gm.TeamWinner = teams.GetTeamById(gm.TeamWinnerId).Result;
+                            gm.Event = contextEvents.GetEventById(gm.EventId).Result;
+                            gm.TeamA = contextTeams.GetTeamById(gm.TeamAId).Result;
+                            gm.TeamB = contextTeams.GetTeamById(gm.TeamBId).Result;
+                            if (gm.TeamWinnerId != null)
+                                gm.TeamWinner = contextTeams.GetTeamById(gm.TeamWinnerId).Result;
                         }
                         else
                         {
@@ -146,12 +142,13 @@ namespace Client.Repository
                         {
                             //Finded
                             gm = JsonConvert.DeserializeObject<List<Game>>(await response.Content.ReadAsStringAsync());
-                            foreach(var aux in gm)
+                            foreach (var item in gm)
                             {
-                                aux.TeamA = teams.GetTeamById(aux.TeamAid).Result;
-                                aux.TeamB = teams.GetTeamById(aux.TeamBid).Result;
-                                if(aux.TeamWinnerId != null)
-                                    aux.TeamWinner = teams.GetTeamById(aux.TeamWinnerId).Result;
+                                item.Event = contextEvents.GetEventById(item.EventId).Result;
+                                item.TeamA = contextTeams.GetTeamById(item.TeamAId).Result;
+                                item.TeamB = contextTeams.GetTeamById(item.TeamBId).Result;
+                                if (item.TeamWinnerId != null)
+                                    item.TeamWinner = contextTeams.GetTeamById(item.TeamWinnerId).Result;
                             }
                         }
                         else
@@ -170,7 +167,7 @@ namespace Client.Repository
             return gm;
         }
 
-        public async Task<Game> AddNewGame(Event newEvent)
+        public async Task<Game> AddNewGame(Game newGame)
         {
             if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
                 return null;
@@ -187,16 +184,13 @@ namespace Client.Repository
                         client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
-                        var stringContent = new StringContent(JsonConvert.SerializeObject(newEvent), Encoding.UTF8, "application/json");
+                        var stringContent = new StringContent(JsonConvert.SerializeObject(newGame), Encoding.UTF8, "application/json");
                         HttpResponseMessage response = await client.PostAsync(post_method, stringContent);
 
                         if (response.IsSuccessStatusCode)
                         {
                             //Added
                             gm = JsonConvert.DeserializeObject<Game>(await response.Content.ReadAsStringAsync());
-                            gm.TeamA = teams.GetTeamById(gm.TeamAid).Result;
-                            gm.TeamB = teams.GetTeamById(gm.TeamBid).Result;
-                            gm.TeamWinner = teams.GetTeamById(gm.TeamWinnerId).Result;
                         }
                         else
                         {
@@ -213,7 +207,7 @@ namespace Client.Repository
             return gm;
         }
 
-        public async Task<Game> EditGame(Event editEvent, int? id)
+        public async Task<Game> EditGame(Game editGame, int? id)
         {
 
             if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
@@ -231,16 +225,19 @@ namespace Client.Repository
                         client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //PUT
-                        var stringContent = new StringContent(JsonConvert.SerializeObject(editEvent), Encoding.UTF8, "application/json");
+                        var stringContent = new StringContent(JsonConvert.SerializeObject(editGame), Encoding.UTF8, "application/json");
                         HttpResponseMessage response = await client.PutAsync(put_method + $"/{id}", stringContent);
 
                         if (response.IsSuccessStatusCode)
                         {
                             //Edited
                             gm = JsonConvert.DeserializeObject<Game>(await response.Content.ReadAsStringAsync());
-                            gm.TeamA = teams.GetTeamById(gm.TeamAid).Result;
-                            gm.TeamB = teams.GetTeamById(gm.TeamBid).Result;
-                            gm.TeamWinner = teams.GetTeamById(gm.TeamWinnerId).Result;
+                            gm.Event = contextEvents.GetEventById(gm.EventId).Result;
+                            gm.TeamA = contextTeams.GetTeamById(gm.TeamAId).Result;
+                            gm.TeamB = contextTeams.GetTeamById(gm.TeamBId).Result;
+                            if (gm.TeamWinnerId != null)
+                                gm.TeamWinner = contextTeams.GetTeamById(gm.TeamWinnerId).Result;
+
                         }
                         else
                         {

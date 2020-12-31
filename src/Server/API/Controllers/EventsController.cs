@@ -51,9 +51,9 @@ namespace Server.Controllers
 
         [HttpGet("GetTeamsByEventId/{id}")]
         [Authorize("Bearer")]
-        public async Task<ICollection<Team>> GetTeamsByEvent(int id)
+        public async Task<ICollection<Team>> GetTeamsByEventId(int id)
         {
-            var teams = _context.Events.FirstOrDefault(a => a.EventId == id).Teams;
+            var teams = _context.Events.Include("Teams").FirstOrDefault(a => a.EventId == id).Teams;
 
             return teams;
         }
@@ -64,10 +64,30 @@ namespace Server.Controllers
         {
             try
             {
-                var ev = await _context.Events.FindAsync(idEvent);
                 var tm = await _context.Teams.FindAsync(idTeam);
-                ev.Teams.Add(tm);
-                tm.Events.Add(ev);
+                _context.Events.Include("Teams").FirstOrDefault(x => x.EventId == idEvent).Teams.Add(tm);
+                //Save
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        [HttpPost("RemoveTeamFromEvent")]
+        [Authorize("Bearer")]
+        public async Task<bool> RemoveTeamFromEvent(int idEvent, int idTeam)
+        {
+            try
+            {
+                var tm = await _context.Teams.FindAsync(idTeam);
+                if (tm != null)
+                    NotFound();
+                    
+                _context.Events.Include("Teams").FirstOrDefault(x => x.EventId == idEvent).Teams.Remove(tm);
+                //Save
                 _context.SaveChanges();
                 return true;
             }

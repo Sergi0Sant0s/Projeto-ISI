@@ -83,9 +83,15 @@ namespace Server.Controllers
         [HttpPost]
         public async Task<ActionResult<Player>> PostPlayer(Player player)
         {
-            _context.Players.Add(player);
-            await _context.SaveChangesAsync();
-
+            try
+            {
+                _context.Players.Add(player);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception e)
+            {
+                throw;
+            }
             return CreatedAtAction("GetPlayer", new { id = player.PlayerId }, player);
         }
 

@@ -3,7 +3,6 @@ using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -13,16 +12,16 @@ namespace Client.Repository
 {
     public class PlayersRepository
     {
-        private readonly IConfiguration _config;
+        private TeamsRepository contextTeams;
 
         const string get_method = "Players";
         const string post_method = "Players";
         const string put_method = "Players";
         const string delete_method = "Players";
 
-        public PlayersRepository(IConfiguration config)
+        public PlayersRepository()
         {
-            this._config = config;
+            contextTeams = new TeamsRepository();
         }
 
         public async Task<List<Player>> GetAllPlayers()
@@ -50,6 +49,11 @@ namespace Client.Repository
                             try
                             {
                                 pl = JsonConvert.DeserializeObject<List<Player>>(await response.Content.ReadAsStringAsync());
+                                foreach (var item in pl)
+                                {
+                                    if (item.TeamId != null)
+                                        item.Team = await contextTeams.GetTeamById(item.TeamId);
+                                }
                             }
                             catch (Exception)
                             {
@@ -94,6 +98,8 @@ namespace Client.Repository
                         {
                             //Finded
                             pl = JsonConvert.DeserializeObject<Player>(await response.Content.ReadAsStringAsync());
+                            if (pl.TeamId != null)
+                                pl.Team = await contextTeams.GetTeamById(pl.TeamId);
                         }
                         else
                         {
@@ -128,13 +134,25 @@ namespace Client.Repository
                         client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
-                        var stringContent = new StringContent(JsonConvert.SerializeObject(newPlayer), Encoding.UTF8, "application/json");
+                        var player = new
+                        {
+                            Name = newPlayer.Name,
+                            Nickname = newPlayer.Nickname,
+                            Age = newPlayer.Age,
+                            Nationality = newPlayer.Nationality,
+                            Facebook = newPlayer.Facebook,
+                            Twitter = newPlayer.Twitter,
+                            Instagram = newPlayer.Instagram
+                        };
+                        var stringContent = new StringContent(JsonConvert.SerializeObject(player), Encoding.UTF8, "application/json");
                         HttpResponseMessage response = await client.PostAsync(post_method, stringContent);
 
                         if (response.IsSuccessStatusCode)
                         {
                             //Added
                             pl = JsonConvert.DeserializeObject<Player>(await response.Content.ReadAsStringAsync());
+                            if (pl.TeamId != null)
+                                pl.Team = await contextTeams.GetTeamById(pl.TeamId);
                         }
                         else
                         {
@@ -175,6 +193,8 @@ namespace Client.Repository
                         {
                             //Edited
                             pl = JsonConvert.DeserializeObject<Player>(await response.Content.ReadAsStringAsync());
+                            if (pl.TeamId != null)
+                                pl.Team = await contextTeams.GetTeamById(pl.TeamId);
                         }
                         else
                         {

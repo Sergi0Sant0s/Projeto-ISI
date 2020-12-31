@@ -15,9 +15,6 @@ namespace DATA.Entities
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MapOfGameId { get; set; }
 
-        [JsonIgnore]
-        public virtual ICollection<StatPlayerOnMap> StatPlayerOnMap { get; set; }
-
         public int? TeamAResult { get; set; }
         public int? TeamBResult { get; set; }
 

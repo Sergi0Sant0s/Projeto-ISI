@@ -30,6 +30,13 @@ namespace DATA.Entities
 
         /* RELATIONSHIP */
 
+        //Game
+        [Required]
+        public int GameId { get; set; }
+        [JsonIgnore]
+        [ForeignKey("GameId")]
+        public Game Game { get; set; }
+
         //PLAYER
         [Required]
         public int PlayerId { get; set; }

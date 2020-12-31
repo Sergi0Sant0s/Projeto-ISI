@@ -49,15 +49,15 @@ namespace Client.Models
             {
                 entity.HasIndex(e => e.EventId, "IX_Games_EventId");
 
-                entity.HasIndex(e => e.TeamAid, "IX_Games_TeamAId");
+                entity.HasIndex(e => e.TeamAId, "IX_Games_TeamAId");
 
-                entity.HasIndex(e => e.TeamBid, "IX_Games_TeamBId");
+                entity.HasIndex(e => e.TeamBId, "IX_Games_TeamBId");
 
                 entity.HasIndex(e => e.TeamWinnerId, "IX_Games_TeamWinnerId");
 
-                entity.Property(e => e.TeamAid).HasColumnName("TeamAId");
+                entity.Property(e => e.TeamAId).HasColumnName("TeamAId");
 
-                entity.Property(e => e.TeamBid).HasColumnName("TeamBId");
+                entity.Property(e => e.TeamBId).HasColumnName("TeamBId");
 
                 
             });

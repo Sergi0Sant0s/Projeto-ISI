@@ -15,14 +15,16 @@ namespace Client.Controllers
     {
         private readonly PlayersRepository contextPlayers;
 
-        public PlayersController(IConfiguration config)
+        public PlayersController()
         {
-            contextPlayers = new PlayersRepository(config);
+            contextPlayers = new PlayersRepository();
         }
 
         // GET: Players
         public async Task<IActionResult> Index()
         {
+            if (Program.Token == null || Program.Authentication == null)
+                return RedirectToAction("Home/Index");
             return View(await contextPlayers.GetAllPlayers());
         }
 

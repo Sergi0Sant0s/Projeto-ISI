@@ -40,6 +40,15 @@ namespace DATA.Migrations
                     b.HasKey("EventId");
 
                     b.ToTable("Events");
+
+                    b.HasData(
+                        new
+                        {
+                            EventId = 1,
+                            DateOfEnd = new DateTime(2021, 1, 5, 1, 29, 38, 248, DateTimeKind.Local).AddTicks(1300),
+                            DateOfStart = new DateTime(2020, 12, 31, 1, 29, 38, 245, DateTimeKind.Local).AddTicks(1367),
+                            EventName = "Blast New York"
+                        });
                 });
 
             modelBuilder.Entity("DATA.Entities.Game", b =>
@@ -91,6 +100,33 @@ namespace DATA.Migrations
                     b.HasKey("MapId");
 
                     b.ToTable("Maps");
+
+                    b.HasData(
+                        new
+                        {
+                            MapId = 1,
+                            Description = "Inferno"
+                        },
+                        new
+                        {
+                            MapId = 2,
+                            Description = "Vertigo"
+                        },
+                        new
+                        {
+                            MapId = 3,
+                            Description = "Dust2"
+                        },
+                        new
+                        {
+                            MapId = 4,
+                            Description = "Overpass"
+                        },
+                        new
+                        {
+                            MapId = 5,
+                            Description = "Train"
+                        });
                 });
 
             modelBuilder.Entity("DATA.Entities.MapOfGame", b =>
@@ -132,32 +168,79 @@ namespace DATA.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Facebook")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Instagram")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Nationality")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
                     b.Property<string>("Nickname")
+                        .IsRequired()
                         .HasMaxLength(30)
                         .HasColumnType("nvarchar(30)");
 
+                    b.Property<int?>("TeamId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Twitter")
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("PlayerId");
 
+                    b.HasIndex("TeamId");
+
                     b.ToTable("Players");
+
+                    b.HasData(
+                        new
+                        {
+                            PlayerId = 1,
+                            Age = 29,
+                            Name = "Gabriel Toledo",
+                            Nationality = "Brazil",
+                            Nickname = "FalleN"
+                        },
+                        new
+                        {
+                            PlayerId = 2,
+                            Age = 28,
+                            Name = "Vito Giuseppe",
+                            Nationality = "Brazil",
+                            Nickname = "kNgV-"
+                        },
+                        new
+                        {
+                            PlayerId = 3,
+                            Age = 25,
+                            Name = "Nicolai Reedtz",
+                            Nationality = "Dinamarca",
+                            Nickname = "device"
+                        },
+                        new
+                        {
+                            PlayerId = 4,
+                            Age = 27,
+                            Name = "Peter Rasmussen",
+                            Nationality = "Dinamarca",
+                            Nickname = "dupreeh"
+                        },
+                        new
+                        {
+                            PlayerId = 5,
+                            Age = 25,
+                            Name = "Lukas Rossander",
+                            Nationality = "Dinamarca",
+                            Nickname = "gla1ve"
+                        });
                 });
 
             modelBuilder.Entity("DATA.Entities.StatPlayerOnMap", b =>
@@ -173,10 +256,10 @@ namespace DATA.Migrations
                     b.Property<int>("Deaths")
                         .HasColumnType("int");
 
-                    b.Property<int>("Kills")
+                    b.Property<int>("GameId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MapOfGameId")
+                    b.Property<int>("Kills")
                         .HasColumnType("int");
 
                     b.Property<int>("PlayerId")
@@ -190,7 +273,7 @@ namespace DATA.Migrations
 
                     b.HasKey("StatPlayerOnMapId");
 
-                    b.HasIndex("MapOfGameId");
+                    b.HasIndex("GameId");
 
                     b.HasIndex("PlayerId");
 
@@ -220,6 +303,43 @@ namespace DATA.Migrations
                     b.HasKey("TeamId");
 
                     b.ToTable("Teams");
+
+                    b.HasData(
+                        new
+                        {
+                            TeamId = 1,
+                            TeamName = "Mibr",
+                            TeamNationality = "Brazil",
+                            TeamRanking = 21
+                        },
+                        new
+                        {
+                            TeamId = 2,
+                            TeamName = "Astralis",
+                            TeamNationality = "Dinamarca",
+                            TeamRanking = 1
+                        },
+                        new
+                        {
+                            TeamId = 3,
+                            TeamName = "Natus Vincere",
+                            TeamNationality = "Russia",
+                            TeamRanking = 3
+                        },
+                        new
+                        {
+                            TeamId = 4,
+                            TeamName = "OG",
+                            TeamNationality = "Europa",
+                            TeamRanking = 7
+                        },
+                        new
+                        {
+                            TeamId = 5,
+                            TeamName = "Mousesports",
+                            TeamNationality = "Europa",
+                            TeamRanking = 9
+                        });
                 });
 
             modelBuilder.Entity("DATA.Entities.User", b =>
@@ -335,11 +455,22 @@ namespace DATA.Migrations
                     b.Navigation("Mapa");
                 });
 
+            modelBuilder.Entity("DATA.Entities.Player", b =>
+                {
+                    b.HasOne("DATA.Entities.Team", "Team")
+                        .WithMany("Players")
+                        .HasForeignKey("TeamId");
+
+                    b.Navigation("Team");
+                });
+
             modelBuilder.Entity("DATA.Entities.StatPlayerOnMap", b =>
                 {
-                    b.HasOne("DATA.Entities.MapOfGame", null)
+                    b.HasOne("DATA.Entities.Game", "Game")
                         .WithMany("StatPlayerOnMap")
-                        .HasForeignKey("MapOfGameId");
+                        .HasForeignKey("GameId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("DATA.Entities.Player", "Player")
                         .WithMany("StatPlayerOnMap")
@@ -352,6 +483,8 @@ namespace DATA.Migrations
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Game");
 
                     b.Navigation("Player");
 
@@ -381,16 +514,13 @@ namespace DATA.Migrations
             modelBuilder.Entity("DATA.Entities.Game", b =>
                 {
                     b.Navigation("MapOfGame");
+
+                    b.Navigation("StatPlayerOnMap");
                 });
 
             modelBuilder.Entity("DATA.Entities.Map", b =>
                 {
                     b.Navigation("MapofGame");
-                });
-
-            modelBuilder.Entity("DATA.Entities.MapOfGame", b =>
-                {
-                    b.Navigation("StatPlayerOnMap");
                 });
 
             modelBuilder.Entity("DATA.Entities.Player", b =>
@@ -405,6 +535,8 @@ namespace DATA.Migrations
                     b.Navigation("GamesTeamB");
 
                     b.Navigation("GamesTeamWinner");
+
+                    b.Navigation("Players");
 
                     b.Navigation("StatPlayerOnMap");
                 });

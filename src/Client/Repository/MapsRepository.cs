@@ -13,17 +13,11 @@ namespace Client.Repository
 {
     public class MapsRepository
     {
-        private readonly IConfiguration _config;
-
         const string get_method = "Maps";
         const string post_method = "Maps";
         const string put_method = "Maps";
         const string delete_method = "Maps";
 
-        public MapsRepository(IConfiguration config)
-        {
-            this._config = config;
-        }
 
         public async Task<List<Map>> GetAllMaps()
         {

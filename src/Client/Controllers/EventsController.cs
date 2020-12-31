@@ -16,15 +16,15 @@ namespace Client.Controllers
     public class EventsController : Controller
     {
         //
-        private EventsRepository contextEvents;
-        private GamesRepository contextGames;
-        private TeamsRepository contextTeams;
+        private EventsRepository contextEvents = null;
+        private GamesRepository contextGames = null;
+        private TeamsRepository contextTeams = null;
 
-        public EventsController(IConfiguration config)
+        public EventsController()
         {
-            this.contextEvents = new EventsRepository(config);
-            this.contextGames = new GamesRepository(config);
-            this.contextTeams = new TeamsRepository(config);
+            this.contextEvents = new EventsRepository();
+            this.contextGames = new GamesRepository();
+            this.contextTeams = new TeamsRepository();
         }
 
         // GET: Events
@@ -40,48 +40,31 @@ namespace Client.Controllers
 
                 return View("Error", new Error { Title = "Listagem de competições", Message = e.Message });
             }
-            
-        }
 
-        public async Task<IActionResult> Games(int? id)
-        {
-            Event ev = null;
-
-            try
-            {
-                ev = await contextEvents.GetEventById(id);
-            }
-            catch (Exception e)
-            {
-                View("Error", new Error() { Title = "Listagem de jogos", Message = e.Message });
-            }
-
-            return View("~/Views/Games/Index.cshtml");
         }
 
         public async Task<IActionResult> Teams(int? id)
         {
             Event ev = null;
             IEnumerable<Team> tms = null;
-            EventTeams aux = null;
 
             try
             {
                 ev = await contextEvents.GetEventById(id);
                 tms = await contextTeams.GetAllTeams();
                 ViewBag.Event = ev;
-                ViewBag.Teams = tms;
+                ViewBag.Teams = tms.Where(m => !ev.Teams.Any(a => a.TeamId == m.TeamId)).ToList();
             }
             catch (Exception e)
             {
                 View("Error", new Error() { Title = "Listagem de jogos", Message = e.Message });
             }
 
-           if(ev == null || tms  == null)
+            if (ev == null || tms == null)
             {
                 return NotFound();
             }
-           //
+            //
             return View("~/Views/TeamsEvent/Index.cshtml");
         }
 
@@ -89,8 +72,8 @@ namespace Client.Controllers
         public async Task<IActionResult> Details(int? id)
         {
             Event ev = null;
-            
-            
+
+
             if (id == null)
             {
                 return View(NotFound());
@@ -104,7 +87,7 @@ namespace Client.Controllers
             {
                 View("Error", new Error() { Title = "Listagem da competição", Message = e.Message });
             }
-            
+
             if (ev == null || ev.Games == null)
             {
                 return View(NotFound());
@@ -115,8 +98,11 @@ namespace Client.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddTeam([Bind("id,TeamId")] int? id,  int? TeamId)
+        public async Task<IActionResult> AddTeam([Bind("id,TeamId")] int? id, int? TeamId)
         {
+            if (Program.Token == null || Program.Authentication == null)
+                return RedirectToAction("Home/Index");
+
             Event ev = null;
             Team tm = null;
 
@@ -129,11 +115,11 @@ namespace Client.Controllers
             {
                 ev = await contextEvents.GetEventById(id);
                 tm = await contextTeams.GetTeamById(TeamId);
-                if(ev != null && tm != null)
+                if (ev != null && tm != null)
                 {
-                    if(!await contextEvents.AddTeamToEvent(ev, tm))
+                    if (!await contextEvents.AddTeamToEvent(ev, tm))
                     {
-                        return RedirectToAction("Teams");
+                        return RedirectToAction("Teams", new { id = id });
                     }
                 }
             }
@@ -146,12 +132,52 @@ namespace Client.Controllers
             {
                 return View(NotFound());
             }
-            return RedirectToAction("Teams");
+            return RedirectToAction("Teams", new { id = id });
+        }
+
+        public async Task<IActionResult> RemoveTeam(int? id, int? TeamId)
+        {
+            if (Program.Token == null || Program.Authentication == null)
+                return RedirectToAction("Home/Index");
+
+            Event ev = null;
+            Team tm = null;
+
+
+            if (id == null || TeamId == null)
+            {
+                return RedirectToAction("Index");
+            }
+            try
+            {
+                ev = await contextEvents.GetEventById(id);
+                tm = await contextTeams.GetTeamById(TeamId);
+                if (ev != null && tm != null)
+                {
+                    if (!await contextEvents.RemoveTeamFromEvent(ev, tm))
+                    {
+                        return RedirectToAction("Teams", new { id = id });
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                View("Error", new Error() { Title = "Adicionar equipa a competição", Message = e.Message });
+            }
+
+            if (ev == null || ev.Games == null)
+            {
+                return View(NotFound());
+            }
+            return RedirectToAction("Teams", new { id = id });
         }
 
         // GET: Events/Create
         public IActionResult Create()
         {
+            if (Program.Token == null || Program.Authentication == null)
+                return RedirectToAction("Home/Index");
+
             return View();
         }
 
@@ -174,7 +200,7 @@ namespace Client.Controllers
             {
                 View("Error", new Error() { Title = "Nova competição", Message = e.Message });
             }
-            
+
             return View(@event);
         }
 
@@ -195,7 +221,7 @@ namespace Client.Controllers
 
                 View("Error", new Error() { Title = "Alteração de dados", Message = e.Message });
             }
-            
+
             if (ev == null)
             {
                 return NotFound();
@@ -221,13 +247,13 @@ namespace Client.Controllers
                 {
                     var ev = await contextEvents.EditEvent(@event, id);
 
-                    if(ev != null)
+                    if (ev != null)
                     {
                         View("Details", ev);
                     }
                     else
                     {
-                        View("Error", new Error() { Title ="Alteração de dados", Message ="Não foi possivel alterar os dados pretendidos"});
+                        View("Error", new Error() { Title = "Alteração de dados", Message = "Não foi possivel alterar os dados pretendidos" });
                     }
                 }
                 catch (Exception e)
@@ -264,7 +290,21 @@ namespace Client.Controllers
             if (await contextEvents.DeleteEvent(id))
                 return RedirectToAction(nameof(Index));
             else
-                return View("Error", new Error() { Title ="Eliminar evento", Message = "Não foi possivel eliminar o evento pretendido"});
+                return View("Error", new Error() { Title = "Eliminar evento", Message = "Não foi possivel eliminar o evento pretendido" });
+        }
+        
+        [HttpPost]
+        public async Task<bool> VerifyTeams(int? idEvent)
+        {
+            var count = contextTeams.GetAllTeams().Result.Count;
+            return count > 0 ? true : false;
+        }
+
+        [HttpPost]
+        public async Task<bool> VerifyGames(int? idEvent)
+        {
+            var count = contextEvents.GetEventById(idEvent).Result.Teams.Count;
+            return count > 1 ? true : false;
         }
     }
 }

@@ -13,7 +13,6 @@ namespace Client.Repository
 {
     public class MapOfGameRepository
     {
-        private readonly IConfiguration _config;
         GamesRepository games;
 
         const string get_method = "MapOfGames";
@@ -22,10 +21,9 @@ namespace Client.Repository
         const string put_method = "MapOfGames";
         const string delete_method = "MapOfGames";
 
-        public MapOfGameRepository(IConfiguration config)
+        public MapOfGameRepository()
         {
-            this._config = config;
-            games = new GamesRepository(_config);
+            games = new GamesRepository();
         }
 
         public async Task<List<Game>> GetAllMapOfGames()

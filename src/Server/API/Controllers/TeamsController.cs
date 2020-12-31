@@ -91,6 +91,52 @@ namespace Server.Controllers
             return CreatedAtAction("GetTeam", new { id = @team.TeamId }, @team);
         }
 
+        [HttpPost("AddPlayerToTeam")]
+        [Authorize("Bearer")]
+        public async Task<bool> AddPlayerToTeam(int idTeam, int idPlayer)
+        {
+            try
+            {
+                var tm = await _context.Teams.FindAsync(idTeam);
+                var pl = await _context.Players.FindAsync(idPlayer);
+                if (tm == null || pl == null)
+                    NotFound();
+                //Insert
+                //_context.Teams.Include("Players").FirstOrDefault(x => x.TeamId == idTeam).Players.Add(pl);
+                _context.Players.FirstOrDefault(x => x.PlayerId == idPlayer).Team = tm;
+                //Save
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        [HttpPost("RemovePlayerFromTeam")]
+        [Authorize("Bearer")]
+        public async Task<bool> RemovePlayerFromTeam(int idTeam, int idPlayer)
+        {
+            try
+            {
+                var tm = await _context.Teams.FindAsync(idTeam);
+                var pl = await _context.Players.FindAsync(idPlayer);
+                if (tm == null || pl == null)
+                    NotFound();
+                //Insert
+                //_context.Teams.Include("Players").FirstOrDefault(x => x.TeamId == idTeam).Players.Remove(pl);
+                _context.Players.FirstOrDefault(x => x.PlayerId == idPlayer).Team = null;
+                //Save
+                _context.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
         // DELETE: Teams/5
         [Authorize("Bearer")]
         [HttpDelete("{id}")]

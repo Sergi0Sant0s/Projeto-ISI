@@ -17,7 +17,7 @@ namespace Client.Controllers
             {
                 Program.Authentication = utilizador;
                 await LoginRepository.Authenticate();
-                return View("~/Views/Home/Index.cshtml");
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception e)
             {
@@ -32,7 +32,7 @@ namespace Client.Controllers
             {
                 Program.Token = null;
                 Program.Authentication = null;
-                return View("~/Views/Home/Index.cshtml");
+                return RedirectToAction("Index", "Home");
             }
             catch (Exception e)
             {

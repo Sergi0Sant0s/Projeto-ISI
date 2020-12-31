@@ -14,19 +14,14 @@ namespace Client.Repository
 {
     public class EventsRepository
     {
-        private readonly IConfiguration _config;
-
         const string get_method = "Events";
-        const string getTeamsByEvent_method = "Events/GetTeamsByEvent";
+        const string getTeamsByEvent_method = "Events/GetTeamsByEventId";
         const string post_method = "Events";
         const string AddTeamToEvent_method = "Events/AddTeamToEvent";
+        const string RemoveTeamFromEvent_method = "Events/RemoveTeamFromEvent";
         const string put_method = "Events";
         const string delete_method = "Events";
 
-        public EventsRepository(IConfiguration config)
-        {
-            this._config = config;
-        }
 
         public async Task<List<Event>> GetAllEvents()
         {
@@ -120,6 +115,7 @@ namespace Client.Repository
         {
             if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
                 return null;
+
             List<Team> tms;
             try
             {
@@ -167,6 +163,7 @@ namespace Client.Repository
         {
             if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
                 return false;
+
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -184,6 +181,43 @@ namespace Client.Repository
                         if (response.IsSuccessStatusCode)
                         {
                             //Added
+                            return true;
+                        }
+                        else
+                        {
+                            //ERROR
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<bool> RemoveTeamFromEvent(Event ev, Team addTeam)
+        {
+            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
+                return false;
+            try
+            {
+                using (var httpClientHandler = new HttpClientHandler())
+                {
+                    httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
+                    using (var client = new HttpClient(httpClientHandler))
+                    {
+                        client.BaseAddress = new Uri(Program.Url);
+                        client.DefaultRequestHeaders.Accept.Clear();
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                        //POST
+                        HttpResponseMessage response = await client.PostAsync(RemoveTeamFromEvent_method + $"?idEvent={ev.EventId}&idTeam={addTeam.TeamId}", new StringContent(string.Empty));
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            //Removed
                             return true;
                         }
                         else

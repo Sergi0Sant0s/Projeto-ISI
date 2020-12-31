@@ -10,7 +10,7 @@ namespace Client.Models
     {
         public Team()
         {
-
+            Players = new List<Player>();
         }
 
         public int TeamId { get; set; }
@@ -22,5 +22,9 @@ namespace Client.Models
         [Required(ErrorMessage = "Obrigatório")]
         [MaxLength(30, ErrorMessage = "O nome da equipa deve ter no maximo 30 caracteres")]
         public string TeamNationality { get; set; }
+
+
+        //Relationship
+        public virtual ICollection<Player> Players { get; set; }
     }
 }

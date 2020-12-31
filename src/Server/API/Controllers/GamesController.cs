@@ -97,6 +97,12 @@ namespace Server.Controllers
         {
             try
             {
+                game.TeamA = _context.Teams.Find(game.TeamAId);
+                game.TeamB = _context.Teams.Find(game.TeamBId);
+                game.TeamWinner = _context.Teams.Find(game.TeamWinnerId);
+                game.Event = _context.Events.Find(game.EventId);
+                if(game.TeamWinnerId == 0)
+                    game.TeamWinnerId = null;
                 _context.Games.Add(game);
                 await _context.SaveChangesAsync();
 

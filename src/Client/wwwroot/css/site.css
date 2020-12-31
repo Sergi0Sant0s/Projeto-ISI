@@ -85,3 +85,8 @@ h4 {
     vertical-align: middle;
 }
 }
+
+#inputGroupSelect01{
+    width: 5vh;
+    margin-right:2vh;
+}

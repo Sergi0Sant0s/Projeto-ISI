@@ -4,75 +4,79 @@
     ViewData["Title"] = "Competições";
 }
 
-<h1>Jogos</h1>
+
 <hr />
 
 <div class="container">
     <div class="row">
         <div class="col-md-4">
             <h5>Nome do Evento</h5>
-            <p>@Model.EventName</p>
+            <p>@ViewBag.Event.EventName</p>
         </div>
         <div class="col-md-4">
             <h5>Data de Inicio</h5>
-            <p>@Model.DateOfStart</p>
+            <p>@ViewBag.Event.DateOfStart</p>
         </div>
         <div class="col-md-4">
             <h5>Data de Fim</h5>
-            <p>@Model.DateOfEnd</p>
+            <p>@ViewBag.Event.DateOfEnd</p>
         </div>
     </div>
     <hr />
+    <h1>Jogos</h1>
     <div class="row">
-        <p>
-            <a asp-action="Create" class="btn btn-success">Nova Jogo</a>
-        </p>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>
-                        Data do Jogo
-                    </th>
-                    <th>
-                        Equipa A
-                    </th>
-                    <th>
-                        Equipa B
-                    </th>
-                    <th>
-                        Equipa Vencedora
-                    </th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.Games)
-                {
+        <div class="col-md-12">
+            <p>
+                <a asp-action="Create" asp-route-id="@ViewBag.Event.EventId" class="btn btn-success">Nova Jogo</a>
+            </p>
+            <table class="table">
+                <thead>
                     <tr>
-                        <td>
-                            @item.GameDate
-                        </td>
-                        <td>
-                            @item.TeamA.TeamName
-                        </td>
-                        <td>
-                            @item.TeamB.TeamName
-                        </td>
-                        <td>
-                            @if (@item.TeamWinner != null)
-                            {
-                                @item.TeamWinner.TeamName;
-                            }
-                        </td>
-                        <td>
-                            <a asp-controller="Games" asp-action="Edit" asp-route-id="@item.GameId" class="btn btn-primary">Editar</a>
-                            <a asp-controller="Games" asp-action="Delete" asp-route-id="@item.GameId" class="btn btn-danger">Eliminar</a>
-                            <a asp-controller="Games" asp-action="Details" asp-route-id="@item.GameId" class="btn btn-secondary">Detalhes</a>
-                            <a asp-controller="Games" asp-action="Maps" asp-route-id="@item.GameId" class="btn btn-secondary">Mapas</a>
-                        </td>
+                        <th>
+                            Data do Jogo
+                        </th>
+                        <th>
+                            Equipa A
+                        </th>
+                        <th>
+                            Equipa B
+                        </th>
+                        <th>
+                            Equipa Vencedora
+                        </th>
+                        <th></th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var item in ViewBag.Games)
+                    {
+                        <tr>
+                            <td>
+                                @item.GameDate
+                            </td>
+                            <td>
+                                @item.TeamA.TeamName
+                            </td>
+                            <td>
+                                @item.TeamB.TeamName
+                            </td>
+                            <td>
+                                @if (@item.TeamWinner != null)
+                                {
+                                    @item.TeamWinner.TeamName;
+                                }
+                            </td>
+                            <td>
+                                <a asp-controller="Games" asp-action="Edit" asp-route-id="@item.GameId" class="btn btn-primary">Editar</a>
+                                <a asp-controller="Games" asp-action="Delete" asp-route-id="@item.GameId" class="btn btn-danger">Eliminar</a>
+                                <a asp-controller="Games" asp-action="Details" asp-route-id="@item.GameId" class="btn btn-secondary">Detalhes</a>
+                                <a asp-controller="Games" asp-action="Maps" asp-route-id="@item.GameId" class="btn btn-secondary">Mapas</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Voltar a listagem de competições</a>
+        </div>
     </div>
 </div>

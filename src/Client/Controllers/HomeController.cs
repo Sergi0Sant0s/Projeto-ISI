@@ -27,6 +27,11 @@ namespace Client.Controllers
             return View();
         }
 
+        public IActionResult RouteError()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
         public IActionResult Privacy()
         {
             return View();

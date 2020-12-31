@@ -1,0 +1,85 @@
+﻿@model Client.Models.Player
+
+@{
+    ViewData["Title"] = "Jogadores";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var id = @ViewBag.Team.TeamId;
+}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4">
+            <h5>Nome da Equipa</h5>
+            <p>@ViewBag.Team.TeamName</p>
+        </div>
+        <div class="col-md-4">
+            <h5>Ranking</h5>
+            <p>@ViewBag.Team.TeamRanking</p>
+        </div>
+        <div class="col-md-4">
+            <h5>Nacionalidade</h5>
+            <p>@ViewBag.Team.TeamNationality</p>
+        </div>
+    </div>
+    <div class="row" style="margin-top:1vh">
+        <div class="form-group col-md-8">
+            <form asp-controller="Teams" asp-action="AddPlayer">
+                <input type="hidden" asp-for="@id" />
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label class="input-group-text" for="inputGroupSelect01">Equipas</label>
+                    </div>
+                    <select class="custom-select" id="inputGroupSelect01" asp-for="PlayerId"
+                            asp-items="@(new SelectList(@ViewBag.Players,"PlayerId","Name"))">
+                    </select>
+                    <input type="submit" value="Adicionar Jogador" class="btn btn-success" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <h1>Jogadores</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Nome
+                    </th>
+                    <th>
+                        Nick Name
+                    </th>
+                    <th>
+                        Idade
+                    </th>
+                    <th>
+                        Nacionalidade
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Player item in ViewBag.PlayersOnTeam)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Nickname)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Age)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Nationality)
+                        </td>
+                        <td>
+                            <a type="submit" class="btn btn-danger" href="/Teams/RemovePlayer/?id=@id&PlayerId=@item.PlayerId">Remover</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <a asp-controller="Teams" asp-action="Index" class="btn btn-primary">Voltar a listagem de Equipas</a>
+    </div>
+</div>
