@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Client.Models;
+﻿using Client.Models;
 using Client.Repository;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace Client.Controllers
 {
@@ -21,31 +17,55 @@ namespace Client.Controllers
         }
 
         // GET: Maps
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Index()
         {
-            if (Program.Token == null || Program.Authentication == null)
-                return RedirectToAction("Home/Index");
-            return View(await contextMaps.GetAllMaps());
+            var aux = await contextMaps.GetAllMaps(HttpContext);
+
+            try
+            {
+                if (aux != null)
+                    return View(aux);
+                else
+                    return View("Error", new Error() { Title = "Listagem de mapas", Message = "Não foi possivel apresentar os mapas pretendidos" });
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+
+            
         }
 
         // GET: Maps/Details/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var map = await contextMaps.GetMapById(id);
-            if (map == null)
+                var map = await contextMaps.GetMapById(id);
+                if (map == null)
+                {
+                    return NotFound();
+                }
+
+                return View(map);
+            }
+            catch (Exception e)
             {
-                return NotFound();
+                return View("Error", new Error() { Title = "Detalhes do mapa", Message = e.Message });
             }
-
-            return View(map);
+            
         }
 
         // GET: Maps/Create
+        [Authorize(Roles = "Admin,User")]
         public IActionResult Create()
         {
             return View();
@@ -56,30 +76,48 @@ namespace Client.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Create([Bind("MapId,Description")] Map map)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await contextMaps.AddNewMap(map);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await contextMaps.AddNewMap(HttpContext, map);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(map);
             }
-            return View(map);
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Criar mapa", Message = e.Message });
+            }
+            
         }
 
         // GET: Maps/Edit/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var map = await contextMaps.GetMapById(id);
-            if (map == null)
-            {
-                return NotFound();
+                var map = await contextMaps.GetMapById(id);
+                if (map == null)
+                {
+                    return NotFound();
+                }
+                return View(map);
             }
-            return View(map);
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Editar mapa", Message = e.Message });
+            }
+            
         }
 
         // POST: Maps/Edit/5
@@ -87,9 +125,10 @@ namespace Client.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int id, [Bind("MapId,Description")] Map map)
         {
-            if (id != map.MapId)
+            if (map == null || id != map.MapId)
             {
                 return NotFound();
             }
@@ -98,9 +137,9 @@ namespace Client.Controllers
             {
                 try
                 {
-                    await contextMaps.EditMap(map,id);
+                    await contextMaps.EditMap(HttpContext, map,id);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception)
                 {
                     if (!MapExists(map.MapId))
                     {
@@ -117,35 +156,63 @@ namespace Client.Controllers
         }
 
         // GET: Maps/Delete/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                var map = await contextMaps.GetMapById(id);
+                if (map == null)
+                {
+                    return NotFound();
+                }
+
+                return View(map);
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Eliminar mapa", Message = e.Message });
             }
 
-            var map = await contextMaps.GetMapById(id);
-            if (map == null)
-            {
-                return NotFound();
-            }
-
-            return View(map);
+            
         }
 
         // POST: Maps/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var map = await contextMaps.GetMapById(id);
-            await contextMaps.DeleteMap(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var map = await contextMaps.GetMapById(id);
+                await contextMaps.DeleteMap(HttpContext, id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Eliminar mapa", Message = e.Message });
+            }
+            
         }
 
+        [Authorize(Roles = "Admin,User")]
         private bool MapExists(int id)
         {
-            return contextMaps.GetMapById(id) != null;
+            try
+            {
+                return contextMaps.GetMapById(id) != null;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+            
         }
     }
 }

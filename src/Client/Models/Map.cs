@@ -9,12 +9,12 @@ namespace Client.Models
     {
         public Map()
         {
-            MapOfGames = new HashSet<MapOfGame>();
+            Games = new List<Game>();
         }
 
         public int MapId { get; set; }
         public string Description { get; set; }
 
-        public virtual ICollection<MapOfGame> MapOfGames { get; set; }
+        public virtual List<Game> Games { get; set; }
     }
 }

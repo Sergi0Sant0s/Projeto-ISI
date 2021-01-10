@@ -1,0 +1,45 @@
+{
+  "dependencies": {
+    "apis1": {
+      "restored": true,
+      "restoreTime": "2021-01-10T17:56:45.1700619Z"
+    }
+  },
+  "parameters": {
+    "Server20210110010525.subscriptionId": {
+      "Name": "Server20210110010525.subscriptionId",
+      "Type": "subscription",
+      "Value": "ec864157-e0a5-4c8a-9be5-8549a75b99a8"
+    },
+    "Server20210110010525.resourceGroupLocation": {
+      "Name": "Server20210110010525.resourceGroupLocation",
+      "Type": null,
+      "Value": "southcentralus"
+    },
+    "apis1.resourceGroupName": {
+      "Name": "apis1.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "Server20210110010525ResourceGroup"
+    },
+    "Server20210110010525.resourceName": {
+      "Name": "Server20210110010525.resourceName",
+      "Type": null,
+      "Value": "Server20210110010525"
+    },
+    "apis1.subscriptionId": {
+      "Name": "apis1.subscriptionId",
+      "Type": "subscription",
+      "Value": "ec864157-e0a5-4c8a-9be5-8549a75b99a8"
+    },
+    "Server20210110010525.resourceGroupName": {
+      "Name": "Server20210110010525.resourceGroupName",
+      "Type": "resourceGroup",
+      "Value": "Server20210110010525ResourceGroup"
+    },
+    "subscriptionId": {
+      "Name": "subscriptionId",
+      "Type": "subscription",
+      "Value": "ec864157-e0a5-4c8a-9be5-8549a75b99a8"
+    }
+  }
+}

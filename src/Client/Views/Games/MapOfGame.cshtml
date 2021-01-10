@@ -1,0 +1,93 @@
+﻿@model Client.Models.MapOfGame
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+    td, th {
+        text-align: center;
+    }
+    table div {
+        padding-left: 5vh;
+        padding-right: 5vh;
+    }
+    a {
+        padding-left: 2vh !important;
+        padding-right: 2vh !important;
+    }
+    h4{
+        margin: 0 !important;
+    }
+</style>
+<hr />
+<h4>Adicionar novo mapa jogado</h4>
+<hr />
+<form asp-action="AddMapOfGame" class="form-horizontal">
+    <input type="hidden" value="@ViewBag.GameId" asp-for="GameId" />
+    <table>
+        <thead>
+            <tr>
+                <th>Mapa</th>
+                <th>Resultado Equipa A</th>
+                <th>Resultado Equipa B</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><select class="custom-select" asp-items="ViewBag.Maps" asp-for="MapaId"></select></td>
+                <td><input asp-for="TeamAresult" class="form-control" /></td>
+                <td><input asp-for="TeamBresult" class="form-control" /></td>
+                <td><input type="submit" value="Adicionar Mapa" class="btn btn-success" /></td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+<hr />
+<h4>Mapas Jogados</h4>
+<hr />
+<table>
+    <thead>
+        <tr>
+            <th>
+                    Mapa
+            </th>
+            <th>
+                <div>
+                    Resultado Equipa A
+                </div>
+            </th>
+            <th>
+                <div>
+                    Resultado Equipa B
+                </div>
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (MapOfGame item in ViewBag.MapsOfGame)
+        {
+            <tr>
+                <td>
+                        @item.Mapa.Description
+                </td>
+                <td>
+                    <div>
+                        @item.TeamAresult
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        @item.TeamBresult
+                    </div>
+                </td>
+                <td>
+                    <a class="btn btn-danger" href="/Games/RemoveMapOfGame/?id=@item.GameId&idMapOfGame=@item.MapOfGameId">Remover mapa jogado</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a style="margin-top:5vh" class="btn btn-info" asp-action="Index" asp-route-id="@ViewBag.EventId">Voltar para a listagem de jogos</a>

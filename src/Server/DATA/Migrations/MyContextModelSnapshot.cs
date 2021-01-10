@@ -45,8 +45,8 @@ namespace DATA.Migrations
                         new
                         {
                             EventId = 1,
-                            DateOfEnd = new DateTime(2021, 1, 5, 1, 29, 38, 248, DateTimeKind.Local).AddTicks(1300),
-                            DateOfStart = new DateTime(2020, 12, 31, 1, 29, 38, 245, DateTimeKind.Local).AddTicks(1367),
+                            DateOfEnd = new DateTime(2021, 1, 14, 20, 44, 55, 194, DateTimeKind.Local).AddTicks(567),
+                            DateOfStart = new DateTime(2021, 1, 9, 20, 44, 55, 190, DateTimeKind.Local).AddTicks(7833),
                             EventName = "Blast New York"
                         });
                 });
@@ -243,9 +243,9 @@ namespace DATA.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DATA.Entities.StatPlayerOnMap", b =>
+            modelBuilder.Entity("DATA.Entities.StatPlayerOnGame", b =>
                 {
-                    b.Property<int>("StatPlayerOnMapId")
+                    b.Property<int>("StatPlayerOnGameId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .UseIdentityColumn();
@@ -271,7 +271,7 @@ namespace DATA.Migrations
                     b.Property<int>("TeamId")
                         .HasColumnType("int");
 
-                    b.HasKey("StatPlayerOnMapId");
+                    b.HasKey("StatPlayerOnGameId");
 
                     b.HasIndex("GameId");
 
@@ -279,7 +279,7 @@ namespace DATA.Migrations
 
                     b.HasIndex("TeamId");
 
-                    b.ToTable("StatPlayerOnMap");
+                    b.ToTable("StatPlayerOnGame");
                 });
 
             modelBuilder.Entity("DATA.Entities.Team", b =>
@@ -373,7 +373,7 @@ namespace DATA.Migrations
                         new
                         {
                             UserId = 1,
-                            Email = "qwerty@qwerty.qwerty",
+                            Email = "Admin@games.com",
                             Password = "Admin",
                             Role = "Admin",
                             Username = "Admin"
@@ -381,10 +381,18 @@ namespace DATA.Migrations
                         new
                         {
                             UserId = 2,
-                            Email = "qwerty@qwerty.qwerty",
+                            Email = "User@games.com",
                             Password = "User",
                             Role = "User",
                             Username = "User"
+                        },
+                        new
+                        {
+                            UserId = 3,
+                            Email = "Convidado@games.com",
+                            Password = "Convidado",
+                            Role = "Convidado",
+                            Username = "Convidado"
                         });
                 });
 
@@ -464,22 +472,22 @@ namespace DATA.Migrations
                     b.Navigation("Team");
                 });
 
-            modelBuilder.Entity("DATA.Entities.StatPlayerOnMap", b =>
+            modelBuilder.Entity("DATA.Entities.StatPlayerOnGame", b =>
                 {
                     b.HasOne("DATA.Entities.Game", "Game")
-                        .WithMany("StatPlayerOnMap")
+                        .WithMany("StatPlayerOnGame")
                         .HasForeignKey("GameId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DATA.Entities.Player", "Player")
-                        .WithMany("StatPlayerOnMap")
+                        .WithMany("StatPlayerOnGame")
                         .HasForeignKey("PlayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("DATA.Entities.Team", "Team")
-                        .WithMany("StatPlayerOnMap")
+                        .WithMany("StatPlayerOnGame")
                         .HasForeignKey("TeamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -515,7 +523,7 @@ namespace DATA.Migrations
                 {
                     b.Navigation("MapOfGame");
 
-                    b.Navigation("StatPlayerOnMap");
+                    b.Navigation("StatPlayerOnGame");
                 });
 
             modelBuilder.Entity("DATA.Entities.Map", b =>
@@ -525,7 +533,7 @@ namespace DATA.Migrations
 
             modelBuilder.Entity("DATA.Entities.Player", b =>
                 {
-                    b.Navigation("StatPlayerOnMap");
+                    b.Navigation("StatPlayerOnGame");
                 });
 
             modelBuilder.Entity("DATA.Entities.Team", b =>
@@ -538,7 +546,7 @@ namespace DATA.Migrations
 
                     b.Navigation("Players");
 
-                    b.Navigation("StatPlayerOnMap");
+                    b.Navigation("StatPlayerOnGame");
                 });
 #pragma warning restore 612, 618
         }

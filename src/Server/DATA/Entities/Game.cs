@@ -21,34 +21,35 @@ namespace DATA.Entities
         //EVENT
         [Required]
         public int EventId { get; set; }
-        [JsonIgnore]
         [ForeignKey("EventId")]
+        [JsonIgnore]
         public Event Event { get; set; }
 
         //TEAM A
         [Required]
         public int TeamAId { get; set; }
-        [JsonIgnore]
         [ForeignKey("TeamAId")]
+        [JsonIgnore]
         public Team TeamA { get; set; }
 
         //TEAM B
         [Required]
         public int TeamBId { get; set; }
-        [JsonIgnore]
         [ForeignKey("TeamBId")]
+        [JsonIgnore]
         public Team TeamB { get; set; }
 
         //TEAM WINNER
         public int? TeamWinnerId { get; set; }
-        [JsonIgnore]
         [ForeignKey("TeamWinnerId")]
+        [JsonIgnore]
         public Team TeamWinner { get; set; }
 
 
         //MAPS OF GAME
         [JsonIgnore]
         public virtual ICollection<MapOfGame> MapOfGame { get; set; }
-        public virtual ICollection<StatPlayerOnMap> StatPlayerOnMap { get; set; }
+        [JsonIgnore]
+        public virtual ICollection<StatPlayerOnGame> StatPlayerOnGame { get; set; }
     }
 }

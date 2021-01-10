@@ -12,9 +12,6 @@ namespace Client
 {
     public class Program
     {
-        private static Auth_Token token = null;
-        private static Login authentication = null;
-
         public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
@@ -28,7 +25,5 @@ namespace Client
                 });
 
         public static readonly string Url = "https://localhost:5001/";
-        public static Auth_Token Token { get => token; set => token = value; }
-        public static Login Authentication { get => authentication; set => authentication = value; }
     }
 }

@@ -4,10 +4,11 @@
     <TargetFramework>net5.0</TargetFramework>
     <StartupObject>Server.Program</StartupObject>
     <OutputType>Exe</OutputType>
+    <UserSecretsId>abfa0305-14a5-413c-b37f-d5dcdef7a11c</UserSecretsId>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile></DocumentationFile>
+    <DocumentationFile>D:\OneDrive\OneDrive - Instituto Politécnico do Cávado e do Ave\IPCA\3_Ano\3.1 - Integração de Sistemas de Informação\Trabalhos\2_Trabalho\src\Server\API\Server.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>

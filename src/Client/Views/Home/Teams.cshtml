@@ -1,0 +1,47 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<style>
+    tr,h4{
+        text-align:center;
+    }
+</style>
+
+<hr />
+<h4>Equipas</h4>
+<hr />
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                Nome da Equipa
+            </th>
+            <th>
+                Ranking da Equipa
+            </th>
+            <th>
+                Nacionalidade
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (Team item in ViewBag.Teams)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeamName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeamRanking)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TeamNationality)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

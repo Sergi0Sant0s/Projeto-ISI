@@ -1,7 +1,7 @@
 ﻿@model Client.Models.Game
 
 @{
-    ViewData["Title"] = "Editar Competição";
+    ViewData["Title"] = "Editar Jogo";
     int id = ViewBag.Event.EventId;
 }
 
@@ -9,8 +9,9 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-controller="Games" asp-action="Edit">
-            <input type="hidden" asp-for="EventId" value="@id" />
+        <form asp-action="Edit">
+            <input type="hidden" asp-for="EventId"/>
+            <input type="hidden" asp-for="GameId"/>
             <div class="form-group">
                 <label class="control-label">Data</label>
                 <input asp-for="GameDate" class="form-control" />
@@ -18,85 +19,26 @@
             </div>
             <div class="form-group">
                 <label class="control-label">Equipa A</label>
-                <select id="TeamA" asp-for="TeamAId" class="form-control" asp-items="@ViewBag.TeamsA"></select>
+                <input type="hidden" asp-for="TeamAId"/>
+                <input id="TeamA" class="form-control" disabled  value="@Model.TeamA.TeamName"/>
             </div>
             <div class="form-group">
                 <label class="control-label">Equipa B</label>
-                <select id="TeamB" asp-for="TeamBId" class="form-control" asp-items="@ViewBag.TeamsB"></select>
+                <input type="hidden" asp-for="TeamBId" />
+                <input id="TeamA" class="form-control" disabled value="@Model.TeamB.TeamName" />
             </div>
             <div class="form-group">
                 <label class="control-label">Equipa Vencedora</label>
-                <select id="TeamWinner" asp-for="TeamWinnerId" class="form-control">
-                    <option value="0">Sem Vencedor</option>
+                <select id="TeamWinner" asp-for="TeamWinnerId"  class="form-control" asp-items="@ViewBag.TeamsWinner">
                 </select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Salvar Jogo" class="btn btn-success" />
+                <input type="submit" value="Salvar Jogo" class="btn btn-success"/>
                 <a asp-action="Index" asp-route-id="@ViewBag.Event.EventId" class="btn btn-danger">Descartar Dados</a>
             </div>
         </form>
     </div>
 </div>
-<script>
-    $(document).ready(function () {
-        reset();
-    });
-
-    $('#TeamA').on("change", function () { TeamAChange(); reset(); });
-    $('#TeamB').on("change", function () { TeamBChange(); reset(); });
-
-    function reset() {
-        $('#TeamWinner').text('');
-        $('#TeamWinner').append('<option value="0">Sem Vencedor</option>');
-        $('#TeamWinner').append(new Option($("#TeamA option:selected").text(), $("#TeamA option:selected").val()));
-        $('#TeamWinner').append(new Option($("#TeamB option:selected").text(), $("#TeamB option:selected").val()));
-    }
-
-    function TeamAChange() {
-        var teamB = $("#TeamB option:selected").val()
-        $.post("/Games/GetTeamsExcluded",
-            {
-                id: @ViewBag.Event.EventId,
-                team: $("#TeamA option:selected").val()
-            },
-            function (data, status) {
-                if (data != null) {
-                    if (data != null) {
-                        $("#TeamB").text('');
-                        for (var i = 0; i < data.length; i++) {
-                            if (teamB == data[i].value)
-                                $("#TeamB").append('<option value="' + data[i].value + '" selected>' + data[i].text + '</option>');
-                            else
-                                $("#TeamB").append('<option value="' + data[i].value + '">' + data[i].text + '</option>');
-                        }
-                    }
-                }
-            });
-    }
-
-    function TeamBChange() {
-
-        var teamA = $("#TeamA option:selected").val()
-        $.post("/Games/GetTeamsExcluded",
-            {
-                id: @ViewBag.Event.EventId,
-                team: $("#TeamB option:selected").val()
-            },
-            function (data, status) {
-                if (data != null) {
-                    if (data != null) {
-                        $("#TeamA").text('');
-                        for (var i = 0; i < data.length; i++) {
-                            if (teamA == data[i].value)
-                                $("#TeamA").append('<option value="' + data[i].value + '" selected>' + data[i].text + '</option>');
-                            else
-                                $("#TeamA").append('<option value="' + data[i].value + '">' + data[i].text + '</option>');
-                        }
-                    }
-                }
-            });
-    }
-</script>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

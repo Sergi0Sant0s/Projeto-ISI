@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Client.Models;
 using Client.Repository;
+using Client.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Client.Controllers
 {
@@ -22,42 +22,59 @@ namespace Client.Controllers
         // GET: Users
         public async Task<IActionResult> Index()
         {
-            return View(await contextUsers.GetAllUsers());
+            try
+            {
+                return View(await contextUsers.GetAllUsers(HttpContext));
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Listagem de utilizadores", Message = e.Message });
+            }
         }
 
         // GET: Users/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var user = await contextUsers.GetUserById(id);
-            if (user == null)
+                var user = await contextUsers.GetUserById(HttpContext, id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return View(user);
+            }
+            catch (Exception e)
             {
-                return NotFound();
+                return View("Error", new Error() { Title = "Detalhes do utilizador", Message = e.Message });
             }
-
-            return View(user);
         }
 
         // GET: Users/Create
         public async Task<IActionResult> Create()
         {
-            if (Program.Token == null || Program.Authentication == null)
-                return RedirectToAction("Home/Index");
+            try
+            {
+                List<SelectListItem> list = new List<SelectListItem>();
 
-
-            List<SelectListItem> list = new List<SelectListItem>();
-
-            foreach (var item in await contextUsers.GetAllRoles())
+                foreach (var item in await contextUsers.GetAllRoles(HttpContext))
                     list.Add(new SelectListItem() { Value = item, Text = item, Selected = false });
-            //
-            list[0].Selected = true;
-            ViewBag.Roles = new SelectList(list, "Value", "Text");
-            //
-            return View();
+                //
+                list[0].Selected = true;
+                ViewBag.Roles = new SelectList(list, "Value", "Text");
+                //
+                return View();
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Criar utilizador", Message = e.Message });
+            }
         }
 
         // POST: Users/Create
@@ -67,40 +84,54 @@ namespace Client.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("UserId,Username,Email,Password,Role")] User user)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await contextUsers.AddNewUser(user);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await contextUsers.AddNewUser(HttpContext, user);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(user);
             }
-            return View(user);
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Criar utilizador", Message = e.Message });
+            }
         }
 
         // GET: Users/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
+                if (id == null)
+                {
+                    return NotFound();
+                }
+
+                ViewBag.User = await contextUsers.GetUserById(HttpContext, id);
+
+                List<SelectListItem> list = new List<SelectListItem>();
+
+                foreach (var item in await contextUsers.GetAllRoles(HttpContext))
+                {
+                    if (ViewBag.User.Role == item)
+                        list.Add(new SelectListItem() { Value = item, Text = item, Selected = true });
+                    else
+                        list.Add(new SelectListItem() { Value = item, Text = item, Selected = false });
+                }
+                ViewBag.Roles = new SelectList(list, "Value", "Text");
+
+                if (ViewBag.User == null)
+                {
+                    return NotFound();
+                }
+                return View();
             }
-
-            ViewBag.User = await contextUsers.GetUserById(id);
-
-            List<SelectListItem> list = new List<SelectListItem>();
-
-            foreach (var item in await contextUsers.GetAllRoles())
+            catch (Exception e)
             {
-                if (ViewBag.User.Role == item)
-                    list.Add(new SelectListItem() { Value = item, Text = item, Selected = true });
-                else
-                    list.Add(new SelectListItem() { Value = item, Text = item, Selected = false });
-            }
-            ViewBag.Roles = new SelectList(list, "Value", "Text");
-
-            if (ViewBag.User == null)
-            {
-                return NotFound();
-            }
-            return View();
+                return View("Error", new Error() { Title = "Editar utilizador", Message = e.Message });
+            } 
         }
 
         // POST: Users/Edit/5
@@ -119,9 +150,9 @@ namespace Client.Controllers
             {
                 try
                 {
-                    await contextUsers.EditUser(user, id);
+                    await contextUsers.EditUser(HttpContext, user, id);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception e)
                 {
                     if (!UserExists(user.UserId))
                     {
@@ -140,18 +171,25 @@ namespace Client.Controllers
         // GET: Users/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var user = await contextUsers.GetUserById(id);
-            if (user == null)
+                var user = await contextUsers.GetUserById(HttpContext, id);
+                if (user == null)
+                {
+                    return NotFound();
+                }
+
+                return View(user);
+            }
+            catch (Exception e)
             {
-                return NotFound();
+                return View("Error", new Error() { Title = "Eliminar utilizador", Message = e.Message });
             }
-
-            return View(user);
         }
 
         // POST: Users/Delete/5
@@ -159,16 +197,30 @@ namespace Client.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var user = await contextUsers.GetUserById(id);
-            if(user != null)
-                await contextUsers.DeleteUser(id);
-            //
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var user = await contextUsers.GetUserById(HttpContext, id);
+                if (user != null)
+                    await contextUsers.DeleteUser(HttpContext, id);
+                //
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Eliminar utilizador", Message = e.Message });
+            }
         }
 
         private bool UserExists(int id)
         {
-            return contextUsers.GetUserById(id) != null;
+            try
+            {
+                return contextUsers.GetUserById(HttpContext, id) != null;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }

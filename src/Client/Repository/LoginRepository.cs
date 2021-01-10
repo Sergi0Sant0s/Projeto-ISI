@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,9 +15,9 @@ namespace Client.Repository
     {
         const string post_login = "Login";
 
-        public static async Task<bool> Authenticate()
+        public static async Task<Auth_Token> Authenticate(Login utilizador)
         {
-            Auth_Token tk;
+            Auth_Token tk = null;
             using (var httpClientHandler = new HttpClientHandler())
             {
                 httpClientHandler.ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => { return true; };
@@ -26,23 +27,22 @@ namespace Client.Repository
                     client.DefaultRequestHeaders.Accept.Clear();
                     client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                     //POST
-                    var stringContent = new StringContent(JsonConvert.SerializeObject(Program.Authentication), Encoding.UTF8, "application/json");
+                    var stringContent = new StringContent(JsonConvert.SerializeObject(utilizador), Encoding.UTF8, "application/json");
                     HttpResponseMessage response = await client.PostAsync(post_login, stringContent);
 
                     if (response.IsSuccessStatusCode)
                     {
                         //Added
                         tk = JsonConvert.DeserializeObject<Auth_Token>(await response.Content.ReadAsStringAsync());
-                        Program.Token = tk;
                     }
                     else
                     {
                         //ERROR
-                        return false;
+                        return tk;
                     }
                 }
             }
-            return true;
+            return tk;
         }
     }
 }

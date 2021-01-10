@@ -14,48 +14,42 @@
 
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav mr-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Home" asp-action="Events">Competições</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Events" asp-action="Index">Competições</a>
+                        <a class="nav-link" asp-controller="Home" asp-action="Teams">Equipas</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Events" asp-action="Create">Equipas</a>
+                        <a class="nav-link" asp-controller="Home" asp-action="Players">Jogadores</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Jogadores</a>
-                    </li>
-                    @if (Program.Token != null)
+                    @if (User.Identity.IsAuthenticated)
                     {
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Parametrização
-                </a>
-                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <a class="dropdown-item" asp-controller="Events" asp-action="Index">Competições</a>
-                    <a class="dropdown-item" asp-controller="Maps" asp-action="Index">Mapas</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" asp-controller="Teams" asp-action="Index">Equipas</a>
-                    <a class="dropdown-item" asp-controller="Players" asp-action="Index">Jogadores</a>
-
-                    @if (Program.Token != null && Program.Token.Role == "Admin")
-                    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Parametrização
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <a class="dropdown-item" asp-controller="Events" asp-action="Index">Competições</a>
+                <a class="dropdown-item" asp-controller="Maps" asp-action="Index">Mapas</a>
                 <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item" asp-controller="Users" asp-action="Index">Utilizadores</a>}
-                </div>
-            </li>}
-                </ul>
-                <!--<form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>-->
-                @if (Program.Token == null)
+                <a class="dropdown-item" asp-controller="Teams" asp-action="Index">Equipas</a>
+                <a class="dropdown-item" asp-controller="Players" asp-action="Index">Jogadores</a>
+
+                @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                 {
-            <a class="btn btn-primary my-2 my-sm-0" type="button" asp-controller="Home" asp-action="Login">Iniciar Sessão</a> }
-        else
-        {
-            <a class="btn btn-danger my-2 my-sm-0" type="button" asp-controller="Login" asp-action="Logout">Logout</a>}
+<div class="dropdown-divider"></div>
+                    <a class="dropdown-item" asp-controller="Users" asp-action="Index">Utilizadores</a>}
+            </div>
+        </li>
+}
+                </ul>
+                @if (!User.Identity.IsAuthenticated)
+                {
+    <a class="btn btn-primary my-2 my-sm-0" type="button" asp-controller="Home" asp-action="Login">Iniciar Sessão</a> }
+else
+{
+<a class="btn btn-danger my-2 my-sm-0" type="button" asp-controller="Login" asp-action="Logout">Logout</a>}
             </div>
         </nav>
     </header>
@@ -67,8 +61,12 @@
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            Footer
-            CS : GO -> Client
+            <div class="row">
+                Trabalho realizado por: Nº 12314 -> Sérgio Filipe Ribeiro Santos
+            </div>
+            <div class="row">
+                Cadeira : ISI - Integração de Sistemas de Informação
+            </div>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

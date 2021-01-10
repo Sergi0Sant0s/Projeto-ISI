@@ -14,7 +14,6 @@ namespace DATA.Entities
         public string Description { get; set; }
 
         /* RELATIONSHIP */
-
         [JsonIgnore]
         public virtual ICollection<MapOfGame> MapofGame { get; set; }
     }

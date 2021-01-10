@@ -1,4 +1,6 @@
 ﻿using Client.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
@@ -6,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -19,10 +22,8 @@ namespace Client.Repository
         const string delete_method = "Maps";
 
 
-        public async Task<List<Map>> GetAllMaps()
+        public async Task<List<Map>> GetAllMaps(HttpContext ctx)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
             List<Map> mp = null;
             HttpResponseMessage response = null;
             try
@@ -34,7 +35,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         response = await client.GetAsync(get_method);
@@ -49,6 +49,11 @@ namespace Client.Repository
                             {
                                 throw;
                             }
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {
@@ -67,9 +72,7 @@ namespace Client.Repository
 
         public async Task<Map> GetMapById(int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Map mp;
+            Map mp = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -79,7 +82,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         HttpResponseMessage response = await client.GetAsync(get_method + $"/{id}");
@@ -105,11 +107,9 @@ namespace Client.Repository
             return mp;
         }
 
-        public async Task<Map> AddNewMap(Map newMap)
+        public async Task<Map> AddNewMap(HttpContext ctx, Map newMap)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Map mp;
+            Map mp = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -119,7 +119,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         var stringContent = new StringContent(JsonConvert.SerializeObject(newMap), Encoding.UTF8, "application/json");
@@ -130,6 +130,11 @@ namespace Client.Repository
                             //Added
                             mp = JsonConvert.DeserializeObject<Map>(await response.Content.ReadAsStringAsync());
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                        }
                         else
                         {
                             //ERROR
@@ -145,11 +150,8 @@ namespace Client.Repository
             return mp;
         }
 
-        public async Task<Map> EditMap(Map editMap, int? id)
+        public async Task<bool> EditMap(HttpContext ctx, Map editMap, int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Map mp;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -159,7 +161,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //PUT
                         var stringContent = new StringContent(JsonConvert.SerializeObject(editMap), Encoding.UTF8, "application/json");
@@ -168,12 +170,18 @@ namespace Client.Repository
                         if (response.IsSuccessStatusCode)
                         {
                             //Edited
-                            mp = JsonConvert.DeserializeObject<Map>(await response.Content.ReadAsStringAsync());
+                            return true;
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                            return false;
                         }
                         else
                         {
                             //ERROR
-                            return null;
+                            return false;
                         }
                     }
                 }
@@ -182,13 +190,10 @@ namespace Client.Repository
             {
                 throw;
             }
-            return mp;
         }
 
-        public async Task<bool> DeleteMap(int? id)
+        public async Task<bool> DeleteMap(HttpContext ctx, int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return false;
             Map deleteMap = await GetMapById(id);
             if (deleteMap != null)
                 using (var httpClientHandler = new HttpClientHandler())
@@ -198,7 +203,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //DELETE
                         HttpResponseMessage response = await client.DeleteAsync(delete_method + $"/{id}");
@@ -207,6 +212,11 @@ namespace Client.Repository
                         {
                             //DELETED
                             return true;
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {

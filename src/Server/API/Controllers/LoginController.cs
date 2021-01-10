@@ -29,6 +29,12 @@ namespace Server.Controllers
             this._config = config;
         }
 
+
+        /// <summary>
+        /// Autentica um utilizador
+        /// </summary>
+        /// <param name="model">utilizador com user e password</param>
+        /// <returns>retorna um objeto com o token</returns>
         [HttpPost]
         public async Task<ActionResult<UserToken>> Authenticate([FromBody] Login model)
         {
@@ -44,20 +50,6 @@ namespace Server.Controllers
 
             // Retorna os dados
             return token;
-        }
-
-        [HttpPost("Validate")]
-        public async Task<ActionResult<string>> ValidateToken(string _token)
-        {
-            // Recupera o utilizador
-            var user = TokenService.ValidateJwtToken(_token, _config);
-
-            // Verifica se o utilizador existe
-            if (user == null)
-                return NotFound(new { message = "Token não existe" });
-
-            // Retorna utilizador
-            return Ok(user);
         }
     }
 }

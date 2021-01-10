@@ -25,16 +25,23 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: Maps
-        [Authorize("Bearer")]
+        /// <summary>
+        /// Devolve os mapas
+        /// </summary>
+        /// <returns>Devolve uma lista de mapas</returns>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Map>>> GetMaps()
         {
             return await _context.Maps.ToListAsync();
         }
 
-        // GET: Maps/5
-        [Authorize("Bearer")]
+        /// <summary>
+        /// Devolve mapa pelo id
+        /// </summary>
+        /// <param name="id">id do mapa</param>
+        /// <returns>Retorna um mapa</returns>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Map>> GetMap(int id)
         {
@@ -48,8 +55,13 @@ namespace Server.Controllers
             return map;
         }
 
-        // PUT: Maps/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Edita um mapa
+        /// </summary>
+        /// <param name="id">id do mapa</param>
+        /// <param name="map">objeto com o mapa alterado</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMap(int id, Map map)
@@ -80,8 +92,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: Maps
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Adiciona novo mapa
+        /// </summary>
+        /// <param name="map">objeto com o novo mapa</param>
+        /// <returns>Retorna o mapa novo</returns>
         [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<Map>> PostMap(Map map)
@@ -92,7 +108,12 @@ namespace Server.Controllers
             return CreatedAtAction("GetMap", new { id = map.MapId }, map);
         }
 
-        // DELETE: Maps/5
+
+        /// <summary>
+        /// Elimina um mapa pelo id
+        /// </summary>
+        /// <param name="id">id do mapa</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMap(int id)
@@ -109,6 +130,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
+
+        /// <summary>
+        /// Verifica se existe
+        /// </summary>
+        /// <param name="id">id do mapa</param>
+        /// <returns>Retorna true/false</returns>
         private bool MapExists(int id)
         {
             return _context.Maps.Any(e => e.MapId == id);

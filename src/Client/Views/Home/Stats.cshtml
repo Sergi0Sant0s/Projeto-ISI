@@ -1,0 +1,136 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    Game game = @ViewBag.Game;
+}
+
+<style>
+    div, input, td div {
+        text-align: center;
+    }
+
+    h5 {
+        font-size: 2vh;
+        margin-left: 2vh;
+    }
+
+    hr {
+        margin: 1vh;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <h4>Jogador</h4>
+                    </th>
+                    <th>
+                        <h4>Kills</h4>
+                    </th>
+                    <th>
+                        <h4>Deaths</h4>
+                    </th>
+                    <th>
+                        <h4>ADR</h4>
+                    </th>
+                    <th>
+                        <h4>Rating</h4>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="5">
+                        <hr />
+                        <h5>Team A - @game.TeamA.TeamName</h5>
+                        <hr />
+                    </td>
+                </tr>
+                @foreach (StatPlayerOnGame item in ViewBag.Stats)
+                {
+                    @if (item.TeamId == game.TeamAId)
+                    {
+                        <tr class="stat">
+                            <td>
+                                <div class="form-group">
+                                    <input class="form-control" value="@item.Player.Nickname" disabled />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input class="form-control" value="@item.Kills" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input class="form-control" value="@item.Deaths" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input class="form-control" value="@item.Adr" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input class="form-control" value="@item.Rating" />
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td colspan="5">
+                        <hr />
+                        <h5>Team B - @game.TeamB.TeamName</h5>
+                        <hr />
+                    </td>
+                </tr>
+
+                @foreach (StatPlayerOnGame item in ViewBag.Stats)
+                {
+                    @if (item.TeamId == game.TeamBId)
+                    {
+            <tr class="stat">
+                <td>
+                    <div class="form-group">
+                        <input class="form-control" value="@item.Player.Nickname" disabled />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input class="form-control" value="@item.Kills" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input class="form-control" value="@item.Deaths" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input class="form-control" value="@item.Adr" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input class="form-control" value="@item.Rating" />
+                    </div>
+                </td>
+            </tr>
+                    }
+                }
+                <tr style="padding:5vh;">
+                    <td colspan="2">
+                        <a style="float:left; margin-left:2vh !important;" href="/Public/Games/@game.EventId" class="btn btn-primary">Voltar para a listagem de jogos</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -14,7 +14,7 @@ namespace DATA.Entities
             GamesTeamA = new List<Game>();
             GamesTeamB = new List<Game>();
             GamesTeamWinner = new List<Game>();
-            StatPlayerOnMap = new List<StatPlayerOnMap>();
+            StatPlayerOnGame = new List<StatPlayerOnGame>();
         }
 
         [Key]
@@ -28,8 +28,7 @@ namespace DATA.Entities
 
 
         //Relationship
-        [JsonIgnore]
-        public virtual ICollection<StatPlayerOnMap> StatPlayerOnMap { get; set; }
+        public virtual ICollection<StatPlayerOnGame> StatPlayerOnGame { get; set; }
         [JsonIgnore]
         public virtual ICollection<Player> Players { get; set; }
         [JsonIgnore]

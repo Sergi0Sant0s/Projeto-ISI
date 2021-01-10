@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Client.Models;
+using Client.Repository;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Client.Models;
-using Microsoft.Extensions.Configuration;
-using Client.Repository;
 
 namespace Client.Controllers
 {
@@ -23,31 +20,39 @@ namespace Client.Controllers
         }
 
         // GET: Teams
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Index()
         {
-            if (Program.Token == null || Program.Authentication == null)
-                return RedirectToAction("Home/Index");
-            return View(await contextTeams.GetAllTeams());
+                return View(await contextTeams.GetAllTeams(HttpContext));
         }
 
         // GET: Teams/Details/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var team = await contextTeams.GetTeamById(id);
-            if (team == null)
+                var team = await contextTeams.GetTeamById(id);
+                if (team == null)
+                {
+                    return NotFound();
+                }
+
+                return View(team);
+            }
+            catch (Exception e)
             {
-                return NotFound();
+                return View("Error", new Error() { Title = "Detalhes da equipa", Message = e.Message });
             }
-
-            return View(team);
         }
 
         // GET: Teams/Create
+        [Authorize(Roles = "Admin,User")]
         public IActionResult Create()
         {
             return View();
@@ -58,37 +63,53 @@ namespace Client.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Create([Bind("TeamId,TeamName,TeamRanking,TeamNationality")] Team team)
         {
-            if (ModelState.IsValid)
+            try
             {
-                await contextTeams.AddNewTeam(team);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    await contextTeams.AddNewTeam(HttpContext, team);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(team);
             }
-            return View(team);
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Criação da equipa", Message = e.Message });
+            }
         }
 
+        [Authorize(Roles = "Admin,User")]
         public IActionResult Players(int? id)
         {
-            var tm = contextTeams.GetTeamById(id);
-            var players = contextPlayers.GetAllPlayers().Result.Where(x => x.TeamId == null || x.TeamId != tm.Result.TeamId);
-            if (tm == null || players == null)
-                NotFound();
-            //
-            ViewBag.Team = tm.Result;
-            ViewBag.PlayersOnTeam = contextPlayers.GetAllPlayers().Result.Where(x => x.TeamId != null && x.TeamId == tm.Result.TeamId);
-            ViewBag.Players = players;
-            //
-            return View();
+            try
+            {
+                var tm = contextTeams.GetTeamById(id);
+                var players = contextPlayers.GetAllPlayers();
+                if (tm == null || players == null)
+                    NotFound();
+                //
+                ViewBag.Team = tm.Result;
+                ViewBag.PlayersOnTeam = players.Result.Where(x => x.TeamId != null && x.TeamId == tm.Result.TeamId);
+                ViewBag.Players = players.Result.Where(x => x.TeamId == null || x.TeamId != tm.Result.TeamId).Where(x=>x.TeamId == null).ToList();
+                //
+                return View();
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Inserção de jogadores na equipa", Message = e.Message });
+            }
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> AddPlayer([Bind("id,TeamId")] int? id, int? PlayerId)
         {
             Team tm = null;
             Player pl = null;
-
 
             if (id == null && PlayerId == null)
             {
@@ -100,7 +121,7 @@ namespace Client.Controllers
                 pl = await contextPlayers.GetPlayerById(PlayerId);
                 if (tm != null && pl != null)
                 {
-                    if (!await contextTeams.AddPlayerToTeam(tm, pl))
+                    if (!await contextTeams.AddPlayerToTeam(HttpContext, tm, pl))
                     {
                         return RedirectToAction("Players", new { id = id });
                     }
@@ -118,6 +139,7 @@ namespace Client.Controllers
             return RedirectToAction("Players", new { id = id });
         }
 
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> RemovePlayer(int? id, int? PlayerId)
         {
             Team tm = null;
@@ -134,7 +156,7 @@ namespace Client.Controllers
                 pl = await contextPlayers.GetPlayerById(PlayerId);
                 if (tm != null && pl != null)
                 {
-                    if (!await contextTeams.RemovePlayerFromTeam(tm, pl))
+                    if (!await contextTeams.RemovePlayerFromTeam(HttpContext, tm, pl))
                     {
                         return RedirectToAction("Players", new { id = id });
                     }
@@ -153,19 +175,27 @@ namespace Client.Controllers
         }
 
         // GET: Teams/Edit/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var team = await contextTeams.GetTeamById(id);
-            if (team == null)
-            {
-                return NotFound();
+                var team = await contextTeams.GetTeamById(id);
+                if (team == null)
+                {
+                    return NotFound();
+                }
+                return View(team);
             }
-            return View(team);
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Editar equipa", Message = e.Message });
+            }
         }
 
         // POST: Teams/Edit/5
@@ -173,6 +203,7 @@ namespace Client.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int id, [Bind("TeamId,TeamName,TeamRanking,TeamNationality")] Team team)
         {
             if (id != team.TeamId)
@@ -184,9 +215,9 @@ namespace Client.Controllers
             {
                 try
                 {
-                    await contextTeams.EditTeam(team,id);
+                    await contextTeams.EditTeam(HttpContext, team,id);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception e)
                 {
                     if (!TeamExists(team.TeamId))
                     {
@@ -194,7 +225,7 @@ namespace Client.Controllers
                     }
                     else
                     {
-                        throw;
+                        return View("Error", new Error() { Title = "Editar equipa", Message = e.Message });
                     }
                 }
                 return RedirectToAction(nameof(Index));
@@ -203,31 +234,48 @@ namespace Client.Controllers
         }
 
         // GET: Teams/Delete/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var team = await contextTeams.GetTeamById(id);
-            if (team == null)
+                var team = await contextTeams.GetTeamById(id);
+                if (team == null)
+                {
+                    return NotFound();
+                }
+
+                return View(team);
+            }
+            catch (Exception e)
             {
-                return NotFound();
+                return View("Error", new Error() { Title = "Eliminar equipa", Message = e.Message });
             }
-
-            return View(team);
         }
 
         // POST: Teams/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var team = await contextTeams.DeleteTeam(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var team = await contextTeams.DeleteTeam(HttpContext, id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Eliminar equipa", Message = e.Message });
+            }
         }
 
+        [Authorize(Roles = "Admin,User")]
         private bool TeamExists(int id)
         {
             return contextTeams.GetTeamById(id) != null;

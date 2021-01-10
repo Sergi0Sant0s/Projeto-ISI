@@ -15618,6 +15618,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Home\\MapOfGame.cshtml",
+      "TargetPath": "Views\\Home\\MapOfGame.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Teams\\Edit.cshtml",
       "TargetPath": "Views\\Teams\\Edit.cshtml",
       "FileKind": "mvc"
@@ -15663,6 +15668,11 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Home\\Players.cshtml",
+      "TargetPath": "Views\\Home\\Players.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Users\\Details.cshtml",
       "TargetPath": "Views\\Users\\Details.cshtml",
       "FileKind": "mvc"
@@ -15670,6 +15680,11 @@
     {
       "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Players\\Delete.cshtml",
       "TargetPath": "Views\\Players\\Delete.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Home\\Events.cshtml",
+      "TargetPath": "Views\\Home\\Events.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -15688,8 +15703,23 @@
       "FileKind": "mvc"
     },
     {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Shared\\Unauthorized.cshtml",
+      "TargetPath": "Views\\Shared\\Unauthorized.cshtml",
+      "FileKind": "mvc"
+    },
+    {
       "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Users\\Delete.cshtml",
       "TargetPath": "Views\\Users\\Delete.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Games\\MapOfGame.cshtml",
+      "TargetPath": "Views\\Games\\MapOfGame.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Games\\Stats.cshtml",
+      "TargetPath": "Views\\Games\\Stats.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -15703,13 +15733,13 @@
       "FileKind": "mvc"
     },
     {
-      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Games\\Details.cshtml",
-      "TargetPath": "Views\\Games\\Details.cshtml",
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Users\\Edit.cshtml",
+      "TargetPath": "Views\\Users\\Edit.cshtml",
       "FileKind": "mvc"
     },
     {
-      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Users\\Edit.cshtml",
-      "TargetPath": "Views\\Users\\Edit.cshtml",
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Events\\Teams.cshtml",
+      "TargetPath": "Views\\Events\\Teams.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -15735,6 +15765,21 @@
     {
       "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Teams\\Delete.cshtml",
       "TargetPath": "Views\\Teams\\Delete.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Home\\Games.cshtml",
+      "TargetPath": "Views\\Home\\Games.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Home\\Stats.cshtml",
+      "TargetPath": "Views\\Home\\Stats.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Home\\Teams.cshtml",
+      "TargetPath": "Views\\Home\\Teams.cshtml",
       "FileKind": "mvc"
     },
     {
@@ -15773,11 +15818,6 @@
       "FileKind": "mvc"
     },
     {
-      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\TeamsEvent\\Index.cshtml",
-      "TargetPath": "Views\\TeamsEvent\\Index.cshtml",
-      "FileKind": "mvc"
-    },
-    {
       "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Maps\\Edit.cshtml",
       "TargetPath": "Views\\Maps\\Edit.cshtml",
       "FileKind": "mvc"
@@ -15795,6 +15835,11 @@
     {
       "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Games\\Edit.cshtml",
       "TargetPath": "Views\\Games\\Edit.cshtml",
+      "FileKind": "mvc"
+    },
+    {
+      "FilePath": "d:\\OneDrive\\OneDrive - Instituto Politécnico do Cávado e do Ave\\IPCA\\3_Ano\\3.1 - Integração de Sistemas de Informação\\Trabalhos\\2_Trabalho\\src\\Client\\Views\\Home\\TeamsEvent.cshtml",
+      "TargetPath": "Views\\Home\\TeamsEvent.cshtml",
       "FileKind": "mvc"
     },
     {

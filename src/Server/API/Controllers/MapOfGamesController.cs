@@ -22,16 +22,24 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: MapOfGames
-        [Authorize("Bearer")]
+        /// <summary>
+        /// Devolve os maps jogados em um jogo
+        /// </summary>
+        /// <returns>Retorna uma lista de mapas jogados</returns>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MapOfGame>>> GetMapOfGame()
         {
             return await _context.MapOfGame.ToListAsync();
         }
 
-        // GET: MapOfGames/5
-        [Authorize("Bearer")]
+
+        /// <summary>
+        /// Devolve o map jogado pelo id
+        /// </summary>
+        /// <param name="id">id do mapa jogado</param>
+        /// <returns>Retorna um mapa jogado</returns>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<MapOfGame>> GetMapOfGame(int id)
         {
@@ -45,17 +53,25 @@ namespace Server.Controllers
             return mapOfGame;
         }
 
-        // GET: MapOfGames/MapOfGamesByGameId/5
-        [Authorize("Bearer")]
+
+        /// <summary>
+        /// Devolve uma lista de mapas jogados pelo id do jogo
+        /// </summary>
+        /// <param name="id">id do jogo</param>
+        /// <returns>Retorna uma lista de mapas jogados</returns>
+        [AllowAnonymous]
         [HttpGet("MapOfGamesByGameId/{id}")]
         public async Task<ActionResult<List<MapOfGame>>> MapOfGamesByGameId(int id)
         {
             return await _context.MapOfGame.Where(b => b.GameId == id).ToListAsync();
-
         }
 
-        // PUT: MapOfGames/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+        /// <summary>
+        /// Edita um mapa jogado
+        /// </summary>
+        /// <param name="id">id do mapa jogado</param>
+        /// <param name="mapOfGame">objeto com o mapa jogado alterado</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutMapOfGame(int id, MapOfGame mapOfGame)
@@ -86,7 +102,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: MapOfGames
+
+        /// <summary>
+        /// Adiciona novo mapa jogado
+        /// </summary>
+        /// <param name="mapOfGame">objeto com o novo mapa jogado</param>
+        /// <returns>Retorna o novo mapa jogado</returns>
         [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<MapOfGame>> PostMapOfGame(MapOfGame mapOfGame)
@@ -97,7 +118,12 @@ namespace Server.Controllers
             return CreatedAtAction("GetMapOfGame", new { id = mapOfGame.MapOfGameId }, mapOfGame);
         }
 
-        // DELETE: MapOfGames/5
+
+        /// <summary>
+        /// Elimina um mapa jogado pelo id
+        /// </summary>
+        /// <param name="id">id do mapa jogado</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteMapOfGame(int id)
@@ -114,6 +140,11 @@ namespace Server.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Verifica se existe um mapa jogado
+        /// </summary>
+        /// <param name="id">id do mapa jogado</param>
+        /// <returns>Retorna true/false</returns>
         private bool MapOfGameExists(int id)
         {
             return _context.MapOfGame.Any(e => e.MapOfGameId == id);

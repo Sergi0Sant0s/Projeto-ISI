@@ -25,6 +25,6 @@ namespace Client.Models
 
 
         //Relationship
-        public virtual ICollection<Player> Players { get; set; }
+        public virtual List<Player> Players { get; set; }
     }
 }

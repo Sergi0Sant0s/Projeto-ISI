@@ -35,12 +35,12 @@ namespace DATA.Entities
         /* RELATIONSHIP */
         //TEAM
         public int? TeamId { get; set; }
-        [JsonIgnore]
         [ForeignKey("TeamId")]
+        [JsonIgnore]
         public Team Team { get; set; }
 
         //Stat Player On Map
         [JsonIgnore]
-        public virtual ICollection<StatPlayerOnMap> StatPlayerOnMap { get; set; }
+        public virtual ICollection<StatPlayerOnGame> StatPlayerOnGame { get; set; }
     }
 }

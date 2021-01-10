@@ -18,7 +18,7 @@ namespace DATA.Context
         public DbSet<Map> Maps { get; set; }
         public DbSet<Game> Games { get; set; }
         public DbSet<MapOfGame> MapOfGame { get; set; }
-        public DbSet<StatPlayerOnMap> StatPlayerOnMap { get; set; }
+        public DbSet<StatPlayerOnGame> StatPlayerOnGame { get; set; }
         public DbSet<Event> Events { get; set; }
         public DbSet<User> Users { get; set; }
 
@@ -57,8 +57,9 @@ namespace DATA.Context
             .HasPrincipalKey(c => c.TeamId);
 
             modelBuilder.Entity<User>().HasData(new User[] {
-                new User() {UserId = 1, Username = "Admin", Password = "Admin",Email="qwerty@qwerty.qwerty", Role = UserRoles.Admin },
-                new User() {UserId = 2, Username = "User", Password = "User",Email="qwerty@qwerty.qwerty", Role = UserRoles.User } 
+                new User() {UserId = 1, Username = "Admin", Password = "Admin",Email="Admin@games.com", Role = UserRoles.Admin },
+                new User() {UserId = 2, Username = "User", Password = "User",Email="User@games.com", Role = UserRoles.User } ,
+                new User() {UserId = 3, Username = "Convidado", Password = "Convidado",Email="Convidado@games.com", Role = UserRoles.Convidado } 
             });
 
 

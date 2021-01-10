@@ -25,16 +25,25 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: Teams
-        [Authorize("Bearer")]
+
+        /// <summary>
+        /// Devolve todas as equipas
+        /// </summary>
+        /// <returns>Retorna uma lista com todas as equipas</returns>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Team>>> GetTeams()
         {
             return await _context.Teams.ToListAsync();
         }
 
-        // GET: Teams/5
-        [Authorize("Bearer")]
+
+        /// <summary>
+        /// Devolve uma equipa pelo seu id
+        /// </summary>
+        /// <param name="id">id da equipa</param>
+        /// <returns>Retorna um objeto do tipo equipa</returns>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Team>> GetTeam(int id)
         {
@@ -48,8 +57,13 @@ namespace Server.Controllers
             return CreatedAtAction("GetTeam", new { id = @team.TeamId }, @team);
         }
 
-        // PUT: Teams/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Edita uma equipa
+        /// </summary>
+        /// <param name="id">id da equipa</param>
+        /// <param name="team">objeto com a equipa alterada</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutTeam(int id, Team team)
@@ -79,8 +93,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: Teams
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Adiciona nova equipa
+        /// </summary>
+        /// <param name="team">objeto com a nova equipa</param>
+        /// <returns>Retorna um objeto com a nova equipa</returns>
         [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<Team>> PostTeam(Team @team)
@@ -91,6 +109,13 @@ namespace Server.Controllers
             return CreatedAtAction("GetTeam", new { id = @team.TeamId }, @team);
         }
 
+
+        /// <summary>
+        /// Adiciona um jogado a uma equipa
+        /// </summary>
+        /// <param name="idTeam">id da equipa</param>
+        /// <param name="idPlayer">id do jogador</param>
+        /// <returns>Retorna true/false</returns>
         [HttpPost("AddPlayerToTeam")]
         [Authorize("Bearer")]
         public async Task<bool> AddPlayerToTeam(int idTeam, int idPlayer)
@@ -114,6 +139,13 @@ namespace Server.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Remove jogador da equipa
+        /// </summary>
+        /// <param name="idTeam">id da equipa</param>
+        /// <param name="idPlayer">id do jogador</param>
+        /// <returns>Retorna true/false</returns>
         [HttpPost("RemovePlayerFromTeam")]
         [Authorize("Bearer")]
         public async Task<bool> RemovePlayerFromTeam(int idTeam, int idPlayer)
@@ -137,7 +169,12 @@ namespace Server.Controllers
             }
         }
 
-        // DELETE: Teams/5
+
+        /// <summary>
+        /// Elimina equipa pelo seu id
+        /// </summary>
+        /// <param name="id">id da equipa</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteTeam(int id)
@@ -154,6 +191,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
+
+        /// <summary>
+        /// Verifica se a equipa existe pelo id
+        /// </summary>
+        /// <param name="id">id da equipa</param>
+        /// <returns>Retorna true/false</returns>
         private bool TeamExists(int id)
         {
             return _context.Teams.Any(e => e.TeamId == id);

@@ -67,10 +67,10 @@
                                 }
                             </td>
                             <td>
+                                <a asp-controller="Games" asp-action="Stats" asp-route-id="@item.GameId" class="btn btn-primary">Estatisticas</a>
+                                <a asp-controller="Games" asp-action="MapOfGame" asp-route-id="@item.GameId" class="btn btn-primary">Mapas</a>
                                 <a asp-controller="Games" asp-action="Edit" asp-route-id="@item.GameId" class="btn btn-primary">Editar</a>
                                 <a asp-controller="Games" asp-action="Delete" asp-route-id="@item.GameId" class="btn btn-danger">Eliminar</a>
-                                <a asp-controller="Games" asp-action="Details" asp-route-id="@item.GameId" class="btn btn-secondary">Detalhes</a>
-                                <a asp-controller="Games" asp-action="Maps" asp-route-id="@item.GameId" class="btn btn-secondary">Mapas</a>
                             </td>
                         </tr>
                     }

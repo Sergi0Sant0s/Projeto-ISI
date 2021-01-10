@@ -1,0 +1,178 @@
+﻿@model Client.Models.StatPlayerOnGame
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+
+    Game game = ViewBag.Game;
+}
+<style>
+    div, input, td div {
+        text-align: center;
+    }
+
+    h5 {
+        font-size: 2vh;
+        margin-left: 2vh;
+    }
+
+    hr {
+        margin: 1vh;
+    }
+</style>
+
+<div class="row">
+    <div class="col-md-12">
+        <table>
+            <thead>
+                <tr>
+                    <th>
+                        <h4>Jogador</h4>
+                    </th>
+                    <th>
+                        <h4>Kills</h4>
+                    </th>
+                    <th>
+                        <h4>Deaths</h4>
+                    </th>
+                    <th>
+                        <h4>ADR</h4>
+                    </th>
+                    <th>
+                        <h4>Rating</h4>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td colspan="5">
+                        <hr />
+                        <h5>Team A - @game.TeamA.TeamName</h5>
+                        <hr />
+                    </td>
+                </tr>
+                @foreach (StatPlayerOnGame item in game.StatPlayerOnGame)
+                {
+                    @if (item.TeamId == game.TeamAId)
+                    {
+
+                        <tr class="stat">
+                            <input type="hidden" asp-for="StatPlayerOnGameId" value="@item.StatPlayerOnGameId" />
+                            <input type="hidden" asp-for="GameId" value="@item.GameId" />
+                            <input type="hidden" asp-for="TeamId" value="@item.TeamId" />
+                            <input type="hidden" asp-for="PlayerId" value="@item.PlayerId" />
+                            <td>
+                                <div class="form-group">
+                                    <input class="form-control" value="@item.Player.Nickname" disabled />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input asp-for="Kills" class="form-control" value="@item.Kills" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input asp-for="Deaths" class="form-control" value="@item.Deaths" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input asp-for="Adr" class="form-control" value="@item.Adr" />
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <input asp-for="Rating" class="form-control" value="@item.Rating" />
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td colspan="5">
+                        <hr />
+                        <h5>Team B - @game.TeamB.TeamName</h5>
+                        <hr />
+                    </td>
+                </tr>
+
+                @foreach (StatPlayerOnGame item in game.StatPlayerOnGame)
+                {
+                    @if (item.TeamId == game.TeamBId)
+                    {
+            <tr class="stat">
+                <input type="hidden" asp-for="StatPlayerOnGameId" value="@item.StatPlayerOnGameId" />
+                <input type="hidden" asp-for="GameId" value="@item.GameId" />
+                <input type="hidden" asp-for="TeamId" value="@item.TeamId" />
+                <input type="hidden" asp-for="PlayerId" value="@item.PlayerId" />
+                <td>
+                    <div class="form-group">
+                        <input class="form-control" value="@item.Player.Nickname" disabled />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input asp-for="Kills" class="form-control" value="@item.Kills" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input asp-for="Deaths" class="form-control" value="@item.Deaths" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input asp-for="Adr" class="form-control" value="@item.Adr" />
+                    </div>
+                </td>
+                <td>
+                    <div class="form-group">
+                        <input asp-for="Rating" class="form-control" value="@item.Rating" />
+                    </div>
+                </td>
+            </tr>
+                    }
+                }
+                <tr style="padding:5vh;">
+                    <td colspan="2">
+                        <button style="float:left;" type="submit" onclick="sub()" class="btn btn-primary">Salvar estatisticas</button>
+                        <a style="float:left; margin-left:2vh !important;" href="/Games/Index/@game.EventId" class="btn btn-danger">Descartar alterações</a>
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.js"></script>
+<script>
+
+    function sub() {
+
+        $('.stat').each(function (index, element) {
+
+            var id = parseInt($(element).find('input[name=StatPlayerOnGameId]').val());
+
+            var stat = {
+                id: id,
+                stat: {
+                    StatPlayerOnGameId: id,
+                    GameId: parseInt($(element).find('input[name=GameId]').val()),
+                    TeamId: parseInt($(element).find('input[name=TeamId]').val()),
+                    PlayerId: parseInt($(element).find('input[name=PlayerId]').val()),
+                    Kills: parseInt($(element).find('input[name=Kills]').val()),
+                    Deaths: parseInt($(element).find('input[name=Deaths]').val()),
+                    Adr: parseFloat($(element).find('input[name=Adr]').val()),
+                    Rating: parseFloat($(element).find('input[name=Rating]').val())
+                }    
+            };
+
+            var url = "/Games/EditStat/" + id;
+            $.post(url, stat, function (data, status) {
+                console.log(status);
+            });
+        });
+        window.location.href = "/Games/Index/" +@game.EventId;
+    }
+</script>

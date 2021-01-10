@@ -14,7 +14,6 @@ namespace DATA.Entities
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int MapOfGameId { get; set; }
-
         public int? TeamAResult { get; set; }
         public int? TeamBResult { get; set; }
 

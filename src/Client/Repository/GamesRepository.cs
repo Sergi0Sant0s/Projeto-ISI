@@ -1,4 +1,6 @@
 ﻿using Client.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
@@ -6,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +18,7 @@ namespace Client.Repository
     {
         TeamsRepository contextTeams;
         EventsRepository contextEvents;
+        StatPlayerOnGameRepository contextStatPlayerOnGame = null;
 
         const string get_method = "Games";
         const string getGamesByEvent_method = "Games/GamesByEventId";
@@ -26,12 +30,11 @@ namespace Client.Repository
         {
             contextTeams = new TeamsRepository();
             contextEvents = new EventsRepository();
+            contextStatPlayerOnGame = new StatPlayerOnGameRepository();
         }
 
-        public async Task<List<Game>> GetAllGames()
+        public async Task<List<Game>> GetAllGames(HttpContext ctx)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
             List<Game> gm = null;
             HttpResponseMessage response = null;
             try
@@ -43,7 +46,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         response = await client.GetAsync(get_method);
@@ -53,11 +55,18 @@ namespace Client.Repository
                             try
                             {
                                 gm = JsonConvert.DeserializeObject<List<Game>>(await response.Content.ReadAsStringAsync());
+                                foreach (Game item in gm)
+                                    item.StatPlayerOnGame = contextStatPlayerOnGame.GetStatPlayerOnGameByGameId(item.GameId).Result;
                             }
                             catch (Exception)
                             {
                                 throw;
                             }
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {
@@ -76,9 +85,7 @@ namespace Client.Repository
 
         public async Task<Game> GetGameById(int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Game gm;
+            Game gm = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -88,7 +95,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         HttpResponseMessage response = await client.GetAsync(get_method + $"/{id}");
@@ -97,11 +103,12 @@ namespace Client.Repository
                         {
                             //Finded
                             gm = JsonConvert.DeserializeObject<Game>(await response.Content.ReadAsStringAsync());
-                            gm.Event = contextEvents.GetEventById(gm.EventId).Result;
-                            gm.TeamA = contextTeams.GetTeamById(gm.TeamAId).Result;
-                            gm.TeamB = contextTeams.GetTeamById(gm.TeamBId).Result;
+                            gm.Event = await contextEvents.GetEventById(gm.EventId);
+                            gm.TeamA = await contextTeams.GetTeamById(gm.TeamAId);
+                            gm.TeamB = await contextTeams.GetTeamById(gm.TeamBId);
                             if (gm.TeamWinnerId != null)
-                                gm.TeamWinner = contextTeams.GetTeamById(gm.TeamWinnerId).Result;
+                                gm.TeamWinner = await contextTeams.GetTeamById(gm.TeamWinnerId);
+                            gm.StatPlayerOnGame = await contextStatPlayerOnGame.GetStatPlayerOnGameByGameId(gm.GameId);
                         }
                         else
                         {
@@ -121,9 +128,7 @@ namespace Client.Repository
 
         public async Task<List<Game>> GetGameByEventId(int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            List<Game> gm;
+            List<Game> gm = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -133,7 +138,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         HttpResponseMessage response = await client.GetAsync(getGamesByEvent_method + $"/{id}");
@@ -149,6 +153,7 @@ namespace Client.Repository
                                 item.TeamB = contextTeams.GetTeamById(item.TeamBId).Result;
                                 if (item.TeamWinnerId != null)
                                     item.TeamWinner = contextTeams.GetTeamById(item.TeamWinnerId).Result;
+                                item.StatPlayerOnGame = contextStatPlayerOnGame.GetStatPlayerOnGameByGameId(item.GameId).Result;
                             }
                         }
                         else
@@ -167,11 +172,9 @@ namespace Client.Repository
             return gm;
         }
 
-        public async Task<Game> AddNewGame(Game newGame)
+        public async Task<Game> AddNewGame(HttpContext ctx, Game newGame)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Game gm;
+            Game gm = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -181,7 +184,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         var stringContent = new StringContent(JsonConvert.SerializeObject(newGame), Encoding.UTF8, "application/json");
@@ -191,6 +194,19 @@ namespace Client.Repository
                         {
                             //Added
                             gm = JsonConvert.DeserializeObject<Game>(await response.Content.ReadAsStringAsync());
+                            if(gm != null)
+                            {
+                                gm.Event = await contextEvents.GetEventById(gm.EventId);
+                                gm.TeamA = await contextTeams.GetTeamById(gm.TeamAId);
+                                gm.TeamB = await contextTeams.GetTeamById(gm.TeamBId);
+                                if (gm.TeamWinnerId != null)
+                                    gm.TeamWinner = await contextTeams.GetTeamById(gm.TeamWinnerId);
+                            }
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {
@@ -207,12 +223,8 @@ namespace Client.Repository
             return gm;
         }
 
-        public async Task<Game> EditGame(Game editGame, int? id)
+        public async Task<bool> EditGame(HttpContext ctx, Game editGame, int? id)
         {
-
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Game gm;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -222,7 +234,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //PUT
                         var stringContent = new StringContent(JsonConvert.SerializeObject(editGame), Encoding.UTF8, "application/json");
@@ -231,18 +243,18 @@ namespace Client.Repository
                         if (response.IsSuccessStatusCode)
                         {
                             //Edited
-                            gm = JsonConvert.DeserializeObject<Game>(await response.Content.ReadAsStringAsync());
-                            gm.Event = contextEvents.GetEventById(gm.EventId).Result;
-                            gm.TeamA = contextTeams.GetTeamById(gm.TeamAId).Result;
-                            gm.TeamB = contextTeams.GetTeamById(gm.TeamBId).Result;
-                            if (gm.TeamWinnerId != null)
-                                gm.TeamWinner = contextTeams.GetTeamById(gm.TeamWinnerId).Result;
-
+                            return true;
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                            return false;
                         }
                         else
                         {
                             //ERROR
-                            return null;
+                            return false;
                         }
                     }
                 }
@@ -251,13 +263,10 @@ namespace Client.Repository
             {
                 throw;
             }
-            return gm;
         }
 
-        public async Task<bool> DeleteGame(int? id)
+        public async Task<bool> DeleteGame(HttpContext ctx, int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return false;
             Game deleteEvent = await GetGameById(id);
             if (deleteEvent != null)
                 using (var httpClientHandler = new HttpClientHandler())
@@ -267,7 +276,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //DELETE
                         HttpResponseMessage response = await client.DeleteAsync(delete_method + $"/{id}");
@@ -276,6 +285,11 @@ namespace Client.Repository
                         {
                             //DELETED
                             return true;
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {

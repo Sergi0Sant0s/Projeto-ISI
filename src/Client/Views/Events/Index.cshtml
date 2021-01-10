@@ -38,8 +38,8 @@
                     @Html.DisplayFor(modelItem => item.DateOfEnd)
                 </td>
                 <td>
-                    <a id="Games" onmousedown="VerifyGames(@item.EventId)" class="btn btn-primary">Jogos</a>
-                    <a id="Teams" onmousedown="VerifyTeams(@item.EventId)" class="btn btn-primary">Equipas</a>
+                    <a class="btn btn-primary" onclick="VerifyGames(@item.EventId)" style="color:white">Jogos</a>
+                    <a class="btn btn-primary" onclick="VerifyTeams(@item.EventId)" style="color:white">Equipas</a>
                     <a asp-action="Edit" asp-route-id="@item.EventId" class="btn btn-primary">Editar</a>
                     <a asp-action="Delete" asp-route-id="@item.EventId" class="btn btn-danger">Eliminar</a>
                     <a asp-action="Details" asp-route-id="@item.EventId" class="btn btn-secondary">Detalhes</a>

@@ -25,16 +25,24 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: Games
-        [Authorize("Bearer")]
+        /// <summary>
+        /// Devolve todos os jogos
+        /// </summary>
+        /// <returns>Retorna uma lista de jogos</returns>
+        [AllowAnonymous]
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Game>>> GetGames()
         {
             return await _context.Games.ToListAsync();
         }
 
-        // GET: Games/5
-        [Authorize("Bearer")]
+
+        /// <summary>
+        /// Devolve um jogo pela id
+        /// </summary>
+        /// <param name="id">id do jogo</param>
+        /// <returns>Retorna um jogo</returns>
+        [AllowAnonymous]
         [HttpGet("{id}")]
         public async Task<ActionResult<Game>> GetGame(int id)
         {
@@ -48,8 +56,13 @@ namespace Server.Controllers
             return game;
         }
 
-        // GET: Games/GamesByEventId/5
-        [Authorize("Bearer")]
+
+        /// <summary>
+        /// Devolve todos os jogos de um determinado evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna uma lista de jogos</returns>
+        [AllowAnonymous]
         [HttpGet("GamesByEventId/{id}")]
         public async Task<ActionResult<List<Game>>> GamesByEventId(int id)
         {
@@ -57,8 +70,26 @@ namespace Server.Controllers
 
         }
 
-        // PUT: Games/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Devolve as estatisticas dos jogadores de um determinado evento
+        /// </summary>
+        /// <param name="id">id do jogo</param>
+        /// <returns>Retorna uma lista de estatisticas de jogadores</returns>
+        [AllowAnonymous]
+        [HttpGet("StatPlayerByGameId/{id}")]
+        public async Task<ActionResult<List<StatPlayerOnGame>>> StatPlayerByGameId(int id)
+        {
+            return await _context.StatPlayerOnGame.Where(b => b.GameId == id).ToListAsync();
+        }
+
+
+        /// <summary>
+        /// Edita um jogo
+        /// </summary>
+        /// <param name="id">id do jogo</param>
+        /// <param name="game">objeto com o jogo alterado</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutGame(int id, Game game)
@@ -67,6 +98,9 @@ namespace Server.Controllers
             {
                 return BadRequest();
             }
+
+            if (game.TeamWinnerId == 0)
+                game.TeamWinnerId = null;
 
             _context.Entry(game).State = EntityState.Modified;
 
@@ -89,8 +123,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: Games
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Adiciona novo jogo
+        /// </summary>
+        /// <param name="game">objeto com o novo jogo</param>
+        /// <returns>Retorna o novo jogo</returns>
         [Authorize("Bearer")]
         [HttpPost]
         public async Task<ActionResult<Game>> PostGame(Game game)
@@ -114,7 +152,12 @@ namespace Server.Controllers
             }
         }
 
-        // DELETE: Games/5
+
+        /// <summary>
+        /// Elimina um jogo
+        /// </summary>
+        /// <param name="id">id do jogo</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteGame(int id)
@@ -131,6 +174,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
+
+        /// <summary>
+        /// Verifica se existe um jogo
+        /// </summary>
+        /// <param name="id">id do jogo</param>
+        /// <returns>Retorna true/false</returns>
         private bool GameExists(int id)
         {
             return _context.Games.Any(e => e.GameId == id);

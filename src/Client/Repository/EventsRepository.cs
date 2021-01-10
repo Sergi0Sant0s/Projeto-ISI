@@ -1,4 +1,6 @@
 ﻿using Client.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -7,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -25,8 +28,6 @@ namespace Client.Repository
 
         public async Task<List<Event>> GetAllEvents()
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
             List<Event> events = null;
             HttpResponseMessage response = null;
             try
@@ -38,7 +39,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         response = await client.GetAsync(get_method);
@@ -71,9 +71,7 @@ namespace Client.Repository
 
         public async Task<Event> GetEventById(int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Event ev;
+            Event ev = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -83,7 +81,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         HttpResponseMessage response = await client.GetAsync(get_method + $"/{id}");
@@ -113,10 +110,8 @@ namespace Client.Repository
 
         public async Task<List<Team>> GetTeamsByEventId(int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
 
-            List<Team> tms;
+            List<Team> tms = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -126,7 +121,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         HttpResponseMessage response = await client.GetAsync(getTeamsByEvent_method + $"/{id}");
@@ -159,11 +153,8 @@ namespace Client.Repository
 
             return tms;
         }
-        public async Task<bool> AddTeamToEvent(Event ev, Team addTeam)
+        public async Task<bool> AddTeamToEvent(HttpContext ctx, Event ev, Team addTeam)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return false;
-
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -173,7 +164,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         HttpResponseMessage response = await client.PostAsync(AddTeamToEvent_method + $"?idEvent={ev.EventId}&idTeam={addTeam.TeamId}",new StringContent(string.Empty));
@@ -183,6 +174,12 @@ namespace Client.Repository
                             //Added
                             return true;
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                            return false;
+                        }
                         else
                         {
                             //ERROR
@@ -197,10 +194,8 @@ namespace Client.Repository
             }
         }
 
-        public async Task<bool> RemoveTeamFromEvent(Event ev, Team addTeam)
+        public async Task<bool> RemoveTeamFromEvent(HttpContext ctx, Event ev, Team addTeam)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return false;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -210,7 +205,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         HttpResponseMessage response = await client.PostAsync(RemoveTeamFromEvent_method + $"?idEvent={ev.EventId}&idTeam={addTeam.TeamId}", new StringContent(string.Empty));
@@ -220,6 +215,12 @@ namespace Client.Repository
                             //Removed
                             return true;
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                            return false;
+                        }
                         else
                         {
                             //ERROR
@@ -234,11 +235,9 @@ namespace Client.Repository
             }
         }
 
-        public async Task<Event> AddNewEvent(Event newEvent)
+        public async Task<Event> AddNewEvent(HttpContext ctx, Event newEvent)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Event ev;
+            Event ev = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -248,7 +247,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         var stringContent = new StringContent(JsonConvert.SerializeObject(newEvent), Encoding.UTF8, "application/json");
@@ -259,6 +258,11 @@ namespace Client.Repository
                             //Added
                             ev = JsonConvert.DeserializeObject<Event>(await response.Content.ReadAsStringAsync());
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                        }
                         else
                         {
                             //ERROR
@@ -274,11 +278,9 @@ namespace Client.Repository
             return ev;
         }
 
-        public async Task<Event> EditEvent(Event editEvent, int? id)
+        public async Task<Event> EditEvent(HttpContext ctx, Event editEvent, int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return null;
-            Event ev;
+            Event ev = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -288,7 +290,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //PUT
                         var stringContent = new StringContent(JsonConvert.SerializeObject(editEvent), Encoding.UTF8, "application/json");
@@ -299,6 +301,11 @@ namespace Client.Repository
                             //Edited
                             ev = JsonConvert.DeserializeObject<Event>(await response.Content.ReadAsStringAsync());
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                        }
                         else
                         {
                             //ERROR
@@ -314,10 +321,8 @@ namespace Client.Repository
             return ev;
         }
 
-        public async Task<bool> DeleteEvent(int? id)
+        public async Task<bool> DeleteEvent(HttpContext ctx, int? id)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return false;
             Event deleteEvent = await GetEventById(id);
             if (deleteEvent != null)
                 using (var httpClientHandler = new HttpClientHandler())
@@ -327,7 +332,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //DELETE
                         HttpResponseMessage response = await client.DeleteAsync(delete_method + $"/{id}");
@@ -336,6 +341,11 @@ namespace Client.Repository
                         {
                             //DELETED
                             return true;
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {

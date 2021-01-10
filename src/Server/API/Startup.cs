@@ -14,6 +14,8 @@ using Server.Jwt;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Reflection;
 using System.Text;
 
 namespace Server
@@ -98,6 +100,12 @@ namespace Server
                     Type = SecuritySchemeType.Http,
                     Scheme = "Bearer"
                 });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                swagger.IncludeXmlComments(xmlPath);
+
+                swagger.OperationFilter<AuthOperationFilter>();
             });
         }
 
@@ -125,8 +133,6 @@ namespace Server
 
             app.UseAuthentication();
             app.UseAuthorization();
-
-            
 
             app.UseEndpoints(endpoints =>
             {

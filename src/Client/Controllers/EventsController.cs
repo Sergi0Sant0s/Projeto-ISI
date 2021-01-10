@@ -1,15 +1,11 @@
-﻿using System;
+﻿using Client.Models;
+using Client.Repository;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Client.Models;
-using Client.Repository;
-using Microsoft.Extensions.Configuration;
-using Client.ViewModel;
-using Microsoft.Extensions.Logging;
 
 namespace Client.Controllers
 {
@@ -27,7 +23,11 @@ namespace Client.Controllers
             this.contextTeams = new TeamsRepository();
         }
 
-        // GET: Events
+        /// <summary>
+        /// Pagina inicial dos eventos
+        /// </summary>
+        /// <returns>Retorna view</returns>
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Index()
         {
             try
@@ -43,6 +43,13 @@ namespace Client.Controllers
 
         }
 
+
+        /// <summary>
+        /// Pagina das equipas do evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna a view</returns>
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Teams(int? id)
         {
             Event ev = null;
@@ -51,7 +58,7 @@ namespace Client.Controllers
             try
             {
                 ev = await contextEvents.GetEventById(id);
-                tms = await contextTeams.GetAllTeams();
+                tms = await contextTeams.GetAllTeams(HttpContext);
                 ViewBag.Event = ev;
                 ViewBag.Teams = tms.Where(m => !ev.Teams.Any(a => a.TeamId == m.TeamId)).ToList();
             }
@@ -65,10 +72,16 @@ namespace Client.Controllers
                 return NotFound();
             }
             //
-            return View("~/Views/TeamsEvent/Index.cshtml");
+            return View("~/Views/Events/Teams.cshtml");
         }
 
-        // GET: Events/Details/5
+
+        /// <summary>
+        /// Pagina de detalhes do evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna a view</returns>
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Details(int? id)
         {
             Event ev = null;
@@ -96,13 +109,18 @@ namespace Client.Controllers
             return View(ev);
         }
 
+
+        /// <summary>
+        /// Adiciona nova equipa ao evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <param name="TeamId">id da equipa</param>
+        /// <returns>Retorna a view das equipas</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> AddTeam([Bind("id,TeamId")] int? id, int? TeamId)
         {
-            if (Program.Token == null || Program.Authentication == null)
-                return RedirectToAction("Home/Index");
-
             Event ev = null;
             Team tm = null;
 
@@ -117,7 +135,7 @@ namespace Client.Controllers
                 tm = await contextTeams.GetTeamById(TeamId);
                 if (ev != null && tm != null)
                 {
-                    if (!await contextEvents.AddTeamToEvent(ev, tm))
+                    if (!await contextEvents.AddTeamToEvent(HttpContext, ev, tm))
                     {
                         return RedirectToAction("Teams", new { id = id });
                     }
@@ -135,11 +153,16 @@ namespace Client.Controllers
             return RedirectToAction("Teams", new { id = id });
         }
 
+
+        /// <summary>
+        /// Remove equipa do evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <param name="TeamId">id da equipa</param>
+        /// <returns>Retorna a view das equipas</returns>
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> RemoveTeam(int? id, int? TeamId)
         {
-            if (Program.Token == null || Program.Authentication == null)
-                return RedirectToAction("Home/Index");
-
             Event ev = null;
             Team tm = null;
 
@@ -154,7 +177,7 @@ namespace Client.Controllers
                 tm = await contextTeams.GetTeamById(TeamId);
                 if (ev != null && tm != null)
                 {
-                    if (!await contextEvents.RemoveTeamFromEvent(ev, tm))
+                    if (!await contextEvents.RemoveTeamFromEvent(HttpContext, ev, tm))
                     {
                         return RedirectToAction("Teams", new { id = id });
                     }
@@ -172,27 +195,33 @@ namespace Client.Controllers
             return RedirectToAction("Teams", new { id = id });
         }
 
-        // GET: Events/Create
+
+        /// <summary>
+        /// Pagina de criar novo evento
+        /// </summary>
+        /// <returns>Retorna a view</returns>
+        [Authorize(Roles = "Admin,User")]
         public IActionResult Create()
         {
-            if (Program.Token == null || Program.Authentication == null)
-                return RedirectToAction("Home/Index");
-
             return View();
         }
 
-        // POST: Events/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        /// <summary>
+        /// Cria novo evento
+        /// </summary>
+        /// <param name="event">objeto evento</param>
+        /// <returns>Retorna a view</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Create([Bind("EventId,EventName,DateOfStart,DateOfEnd")] Event @event)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await contextEvents.AddNewEvent(@event);
+                    await contextEvents.AddNewEvent(HttpContext, @event);
                     return RedirectToAction(nameof(Index));
                 }
             }
@@ -204,7 +233,13 @@ namespace Client.Controllers
             return View(@event);
         }
 
-        // GET: Events/Edit/5
+
+        /// <summary>
+        /// Pagina que edita um evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna a View</returns>
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int? id)
         {
             Event ev = null;
@@ -229,11 +264,16 @@ namespace Client.Controllers
             return View(ev);
         }
 
-        // POST: Events/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+        /// <summary>
+        /// Edita um evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <param name="event">objeto evento alterado</param>
+        /// <returns>Retorna a View</returns>
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int id, [Bind("EventId,EventName,DateOfStart,DateOfEnd")] Event @event)
         {
             if (id != @event.EventId)
@@ -245,7 +285,7 @@ namespace Client.Controllers
             {
                 try
                 {
-                    var ev = await contextEvents.EditEvent(@event, id);
+                    var ev = await contextEvents.EditEvent(HttpContext, @event, id);
 
                     if (ev != null)
                     {
@@ -265,7 +305,13 @@ namespace Client.Controllers
             return View(@event);
         }
 
-        // GET: Events/Delete/5
+
+        /// <summary>
+        /// Pagina para eliminar um evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna a View</returns>
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -273,34 +319,63 @@ namespace Client.Controllers
                 return NotFound();
             }
 
-            var ev = await contextEvents.GetEventById(id);
-            if (ev == null)
+            try
             {
-                return NotFound();
-            }
+                var ev = await contextEvents.GetEventById(id);
+                if (ev == null)
+                {
+                    return NotFound();
+                }
 
-            return View(ev);
+                return View(ev);
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Eliminar evento", Message = e.Message });
+            }
+            
+            
         }
 
-        // POST: Events/Delete/5
+
+        /// <summary>
+        /// Elimina um evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna a View</returns>
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (await contextEvents.DeleteEvent(id))
+            if (await contextEvents.DeleteEvent(HttpContext, id))
                 return RedirectToAction(nameof(Index));
             else
                 return View("Error", new Error() { Title = "Eliminar evento", Message = "Não foi possivel eliminar o evento pretendido" });
         }
         
+
+        /// <summary>
+        /// Verifica se existem equipas para adicionar ao evento
+        /// </summary>
+        /// <param name="idEvent">id do evento</param>
+        /// <returns>Retorna true/false</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
         public async Task<bool> VerifyTeams(int? idEvent)
         {
-            var count = contextTeams.GetAllTeams().Result.Count;
+            var count = contextTeams.GetAllTeams(HttpContext).Result.Count;
             return count > 0 ? true : false;
         }
 
+
+        /// <summary>
+        /// Verifica se existe pelo menos 2 equipas
+        /// </summary>
+        /// <param name="idEvent">id do evento</param>
+        /// <returns>Retorna true/false</returns>
         [HttpPost]
+        [Authorize(Roles = "Admin,User")]
         public async Task<bool> VerifyGames(int? idEvent)
         {
             var count = contextEvents.GetEventById(idEvent).Result.Teams.Count;

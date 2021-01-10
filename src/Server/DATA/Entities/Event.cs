@@ -28,7 +28,6 @@ namespace DATA.Entities
 
 
         /* RELATIONSHIP */
-
         [JsonIgnore]
         public virtual ICollection<Team> Teams { get; set; }
         [JsonIgnore]

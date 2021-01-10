@@ -62,14 +62,12 @@
             },
             function (data, status) {
                 if (data != null) {
-                    if (data != null) {
-                        $("#TeamB").text('');
-                        for (var i = 0; i < data.length; i++) {
-                            if (teamB == data[i].value)
-                                $("#TeamB").append('<option value="' + data[i].value + '" selected>' + data[i].text + '</option>');
-                            else
-                                $("#TeamB").append('<option value="' + data[i].value + '">' + data[i].text + '</option>');
-                        }
+                    $("#TeamB").text('');
+                    for (var i = 0; i < data.length; i++) {
+                        if (teamB == data[i].value)
+                            $("#TeamB").append('<option value="' + data[i].value + '" selected>' + data[i].text + '</option>');
+                        else
+                            $("#TeamB").append('<option value="' + data[i].value + '">' + data[i].text + '</option>');
                     }
                 }
             });
@@ -85,14 +83,12 @@
             },
             function (data, status) {
                 if (data != null) {
-                    if (data != null) {
-                        $("#TeamA").text('');
-                        for (var i = 0; i < data.length; i++) {
-                            if (teamA == data[i].value)
-                                $("#TeamA").append('<option value="' + data[i].value + '" selected>' + data[i].text + '</option>');
-                            else
-                                $("#TeamA").append('<option value="' + data[i].value + '">' + data[i].text + '</option>');
-                        }
+                    $("#TeamA").text('');
+                    for (var i = 0; i < data.length; i++) {
+                        if (teamA == data[i].value)
+                            $("#TeamA").append('<option value="' + data[i].value + '" selected>' + data[i].text + '</option>');
+                        else
+                            $("#TeamA").append('<option value="' + data[i].value + '">' + data[i].text + '</option>');
                     }
                 }
             });

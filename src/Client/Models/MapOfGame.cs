@@ -7,11 +7,6 @@ namespace Client.Models
 {
     public partial class MapOfGame
     {
-        public MapOfGame()
-        {
-            StatPlayerOnMaps = new HashSet<StatPlayerOnMap>();
-        }
-
         public int MapOfGameId { get; set; }
         public int? TeamAresult { get; set; }
         public int? TeamBresult { get; set; }
@@ -20,6 +15,5 @@ namespace Client.Models
 
         public virtual Game Game { get; set; }
         public virtual Map Mapa { get; set; }
-        public virtual ICollection<StatPlayerOnMap> StatPlayerOnMaps { get; set; }
     }
 }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Client.Models;
+﻿using Client.Models;
 using Client.Repository;
-using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace Client.Controllers
 {
@@ -21,31 +17,48 @@ namespace Client.Controllers
         }
 
         // GET: Players
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Index()
         {
-            if (Program.Token == null || Program.Authentication == null)
-                return RedirectToAction("Home/Index");
-            return View(await contextPlayers.GetAllPlayers());
+            try
+            {
+                return View(await contextPlayers.GetAllPlayers());
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Listagem de jogadores", Message = e.Message });
+            }
+            
         }
 
         // GET: Players/Details/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var Player = await contextPlayers.GetPlayerById(id);
-            if (Player == null)
+                var Player = await contextPlayers.GetPlayerById(id);
+                if (Player == null)
+                {
+                    return NotFound();
+                }
+
+                return View(Player);
+            }
+            catch (Exception e)
             {
-                return NotFound();
+                return View("Error", new Error() { Title = "Detalhes de jogadores", Message = e.Message });
             }
-
-            return View(Player);
+            
         }
 
         // GET: Players/Create
+        [Authorize(Roles = "Admin,User")]
         public IActionResult Create()
         {
             return View();
@@ -56,31 +69,47 @@ namespace Client.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Create([Bind("PlayerId,Name,Nickname,Age,Nationality,Facebook,Twitter,Instagram")] Player player)
         {
-            if (ModelState.IsValid)
+            try
             {
-                player.StatPlayerOnMaps = null;
-                await contextPlayers.AddNewPlayer(player);
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    player.StatPlayerOnMaps = null;
+                    await contextPlayers.AddNewPlayer(HttpContext, player);
+                    return RedirectToAction(nameof(Index));
+                }
+                return View(player);
             }
-            return View(player);
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Detalhes de jogadores", Message = e.Message });
+            }
         }
 
         // GET: Players/Edit/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var Player = await contextPlayers.GetPlayerById(id);
-            if (Player == null)
-            {
-                return NotFound();
+                var Player = await contextPlayers.GetPlayerById(id);
+                if (Player == null)
+                {
+                    return NotFound();
+                }
+                return View(Player);
             }
-            return View(Player);
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Editar de jogador", Message = e.Message });
+            }
         }
 
         // POST: Players/Edit/5
@@ -88,6 +117,7 @@ namespace Client.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Edit(int id, [Bind("PlayerId,Name,Nickname,Age,Nationality,Facebook,Twitter,Instagram")] Player Player)
         {
             if (id != Player.PlayerId)
@@ -99,9 +129,9 @@ namespace Client.Controllers
             {
                 try
                 {
-                    await contextPlayers.EditPlayer(Player, id);
+                    await contextPlayers.EditPlayer(HttpContext,Player, id);
                 }
-                catch (DbUpdateConcurrencyException)
+                catch (Exception e)
                 {
                     if (!PlayerExists(Player.PlayerId))
                     {
@@ -118,31 +148,50 @@ namespace Client.Controllers
         }
 
         // GET: Players/Delete/5
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return NotFound();
-            }
+                if (id == null)
+                {
+                    return NotFound();
+                }
 
-            var Player = await contextPlayers.GetPlayerById(id);
-            if (Player == null)
+                var Player = await contextPlayers.GetPlayerById(id);
+                if (Player == null)
+                {
+                    return NotFound();
+                }
+
+                return View(Player);
+            }
+            catch (Exception e)
             {
-                return NotFound();
-            }
-
-            return View(Player);
+                return View("Error", new Error() { Title = "Eliminar jogador", Message = e.Message });
+            }            
         }
 
         // POST: Players/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin,User")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var Player = await contextPlayers.DeletePlayer(id);
-            return RedirectToAction(nameof(Index));
+            try
+            {
+                var Player = await contextPlayers.DeletePlayer(HttpContext, id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception e)
+            {
+                return View("Error", new Error() { Title = "Eliminar jogador", Message = e.Message });
+            }
+
+            
         }
 
+        [Authorize(Roles = "Admin,User")]
         private bool PlayerExists(int id)
         {
             return contextPlayers.GetPlayerById(id) != null;

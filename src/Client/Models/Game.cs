@@ -9,7 +9,7 @@ namespace Client.Models
     {
         public Game()
         {
-            MapOfGames = new HashSet<MapOfGame>();
+            MapOfGames = new List<MapOfGame>();
         }
 
         public int GameId { get; set; }
@@ -23,6 +23,7 @@ namespace Client.Models
         public Team TeamA { get; set; }
         public Team TeamB { get; set; }
         public Team? TeamWinner { get; set; }
-        public virtual ICollection<MapOfGame> MapOfGames { get; set; }
+        public virtual List<MapOfGame> MapOfGames { get; set; }
+        public virtual List<StatPlayerOnGame> StatPlayerOnGame { get; set; }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch.Operations;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
@@ -11,28 +12,36 @@ namespace Server.Jwt
 {
     public class AuthOperationFilter : IOperationFilter
     {
+
         public void Apply(OpenApiOperation operation, OperationFilterContext context)
         {
-            var isAuthorized = context.MethodInfo.DeclaringType.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any() ||
-                           context.MethodInfo.GetCustomAttributes(true).OfType<AuthorizeAttribute>().Any();
+            var authAttributes = context.MethodInfo.DeclaringType.GetCustomAttributes(true)
+            .Union(context.MethodInfo.GetCustomAttributes(true))
+            .OfType<AuthorizeAttribute>();
 
-
-            if (!isAuthorized) return;
-
-            operation.Responses.TryAdd(StatusCodes.Status401Unauthorized.ToString(), new OpenApiResponse { Description = "Unauthorized" });
-            operation.Responses.TryAdd(StatusCodes.Status403Forbidden.ToString(), new OpenApiResponse { Description = "Forbidden" });
-
-
-            var jwtbearerScheme = new OpenApiSecurityScheme()
+            if (authAttributes.Any())
             {
-                Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" },
+                var securityRequirement = new OpenApiSecurityRequirement()
+            {
+                {
+                    // Put here you own security scheme, this one is an example
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        },
+                        Scheme = "oauth2",
+                        Name = "Bearer",
+                        In = ParameterLocation.Header,
+                    },
+                    new List<string>()
+                }
             };
-
-            operation.Security.Add(new OpenApiSecurityRequirement()
-            {
-                [jwtbearerScheme] = new[] { "Bearer" } //'thecodebuzz' is scope here
-
-            });
+                operation.Security = new List<OpenApiSecurityRequirement> { securityRequirement };
+                operation.Responses.Add("401", new OpenApiResponse { Description = "Unauthorized" });
+            }
         }
     }
 }

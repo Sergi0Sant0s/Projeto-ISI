@@ -1,17 +1,21 @@
 ﻿using Client.Models;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Client.Repository
 {
     public class TeamsRepository
-    { 
+    {
         const string get_method = "Teams";
         const string post_method = "Teams";
         const string AddPlayerToTeam_method = "Teams/AddPlayerToTeam/";
@@ -20,10 +24,9 @@ namespace Client.Repository
         const string delete_method = "Teams";
 
 
-        public async Task<List<Team>> GetAllTeams()
+
+        public async Task<List<Team>> GetAllTeams(HttpContext ctx)
         {
-            if (Program.Authentication != null && LoginRepository.Authenticate() == null)
-                return null;
             List<Team> tm = null;
             HttpResponseMessage response = null;
             try
@@ -35,7 +38,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         response = await client.GetAsync(get_method);
@@ -45,11 +47,18 @@ namespace Client.Repository
                             try
                             {
                                 tm = JsonConvert.DeserializeObject<List<Team>>(await response.Content.ReadAsStringAsync());
+                                foreach (var item in tm)
+                                    item.Players = new PlayersRepository().GetAllPlayers().Result.Where(x => x.TeamId == item.TeamId).ToList();
                             }
                             catch (Exception)
                             {
                                 throw;
                             }
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {
@@ -68,9 +77,7 @@ namespace Client.Repository
 
         public async Task<Team> GetTeamById(int? id)
         {
-            if (Program.Authentication != null && LoginRepository.Authenticate() == null)
-                return null;
-            Team tm;
+            Team tm = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -80,7 +87,6 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //GET
                         HttpResponseMessage response = await client.GetAsync(get_method + $"/{id}");
@@ -89,6 +95,7 @@ namespace Client.Repository
                         {
                             //Finded
                             tm = JsonConvert.DeserializeObject<Team>(await response.Content.ReadAsStringAsync());
+                            tm.Players = new PlayersRepository().GetAllPlayers().Result.Where(x => x.TeamId == tm.TeamId).ToList();
                         }
                         else
                         {
@@ -106,11 +113,9 @@ namespace Client.Repository
             return tm;
         }
 
-        public async Task<Team> AddNewTeam(Team newTeam)
+        public async Task<Team> AddNewTeam(HttpContext ctx, Team newTeam)
         {
-            if (Program.Authentication != null && LoginRepository.Authenticate() == null)
-                return null;
-            Team tm;
+            Team tm = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -120,7 +125,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         var stringContent = new StringContent(JsonConvert.SerializeObject(newTeam), Encoding.UTF8, "application/json");
@@ -131,6 +136,11 @@ namespace Client.Repository
                             //Added
                             tm = JsonConvert.DeserializeObject<Team>(await response.Content.ReadAsStringAsync());
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                        }
                         else
                         {
                             //ERROR
@@ -146,10 +156,8 @@ namespace Client.Repository
             return tm;
         }
 
-        public async Task<bool> AddPlayerToTeam(Team tm, Player pl)
+        public async Task<bool> AddPlayerToTeam(HttpContext ctx, Team tm, Player pl)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return false;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -159,7 +167,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         HttpResponseMessage response = await client.PostAsync(AddPlayerToTeam_method + $"?idTeam={tm.TeamId}&idPlayer={pl.PlayerId}", new StringContent(string.Empty));
@@ -169,6 +177,12 @@ namespace Client.Repository
                             //Added
                             return true;
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                            return false;
+                        }
                         else
                         {
                             //ERROR
@@ -183,10 +197,8 @@ namespace Client.Repository
             }
         }
 
-        public async Task<bool> RemovePlayerFromTeam(Team tm, Player pl)
+        public async Task<bool> RemovePlayerFromTeam(HttpContext ctx, Team tm, Player pl)
         {
-            if (Program.Authentication == null || LoginRepository.Authenticate() == null || Program.Token == null)
-                return false;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -196,7 +208,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //POST
                         HttpResponseMessage response = await client.PostAsync(RemovePlayerFromTeam_method + $"?idTeam={tm.TeamId}&idPlayer={pl.PlayerId}", new StringContent(string.Empty));
@@ -206,6 +218,12 @@ namespace Client.Repository
                             //Added
                             return true;
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                            return false;
+                        }
                         else
                         {
                             //ERROR
@@ -220,11 +238,9 @@ namespace Client.Repository
             }
         }
 
-        public async Task<Team> EditTeam(Team editTeam, int? id)
+        public async Task<Team> EditTeam(HttpContext ctx, Team editTeam, int? id)
         {
-            if (Program.Authentication != null && LoginRepository.Authenticate() == null)
-                return null;
-            Team tm;
+            Team tm = null;
             try
             {
                 using (var httpClientHandler = new HttpClientHandler())
@@ -234,7 +250,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //PUT
                         var stringContent = new StringContent(JsonConvert.SerializeObject(editTeam), Encoding.UTF8, "application/json");
@@ -245,6 +261,11 @@ namespace Client.Repository
                             //Edited
                             tm = JsonConvert.DeserializeObject<Team>(await response.Content.ReadAsStringAsync());
                         }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
+                        }
                         else
                         {
                             //ERROR
@@ -260,10 +281,8 @@ namespace Client.Repository
             return tm;
         }
 
-        public async Task<bool> DeleteTeam(int? id)
+        public async Task<bool> DeleteTeam(HttpContext ctx, int? id)
         {
-            if (Program.Authentication != null && LoginRepository.Authenticate() == null)
-                return false;
             Team deleteTeam = await GetTeamById(id);
             if (deleteTeam != null)
                 using (var httpClientHandler = new HttpClientHandler())
@@ -273,7 +292,7 @@ namespace Client.Repository
                     {
                         client.BaseAddress = new Uri(Program.Url);
                         client.DefaultRequestHeaders.Accept.Clear();
-                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(Program.Token.Token);
+                        client.DefaultRequestHeaders.Authorization = AuthenticationHeaderValue.Parse(ctx.User.FindFirst(ClaimTypes.Rsa).Value);
                         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
                         //DELETE
                         HttpResponseMessage response = await client.DeleteAsync(delete_method + $"/{id}");
@@ -282,6 +301,11 @@ namespace Client.Repository
                         {
                             //DELETED
                             return true;
+                        }
+                        else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                        {
+                            await ctx.SignOutAsync();
+                            throw new InvalidOperationException("Falha de autenticação");
                         }
                         else
                         {

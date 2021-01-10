@@ -1,0 +1,67 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<style>
+    td, th {
+        text-align: center;
+    }
+
+    table div {
+        padding-left: 5vh;
+        padding-right: 5vh;
+    }
+
+    a {
+        padding-left: 2vh !important;
+        padding-right: 2vh !important;
+    }
+
+    h4 {
+        margin: 0 !important;
+    }
+</style>
+<hr />
+<h4>Mapas Jogados</h4>
+<hr />
+<table>
+    <thead>
+        <tr>
+            <th>
+                Mapa
+            </th>
+            <th>
+                <div>
+                    Resultado Equipa A
+                </div>
+            </th>
+            <th>
+                <div>
+                    Resultado Equipa B
+                </div>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (MapOfGame item in ViewBag.MapsOfGame)
+        {
+            <tr>
+                <td>
+                    @item.Mapa.Description
+                </td>
+                <td>
+                    <div>
+                        @item.TeamAresult
+                    </div>
+                </td>
+                <td>
+                    <div>
+                        @item.TeamBresult
+                    </div>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<a style="margin-top:5vh" class="btn btn-primary" asp-action="Games" asp-route-id="@ViewBag.Game.EventId">Voltar para a listagem de jogos</a>

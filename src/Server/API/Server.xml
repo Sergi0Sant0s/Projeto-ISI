@@ -4,5 +4,421 @@
         <name>Server</name>
     </assembly>
     <members>
+        <member name="M:Server.Controllers.EventsController.GetEvents">
+            <summary>
+            Devolve todos os eventos
+            </summary>
+            <returns>Retorna uma lista com todos os eventos</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.GetEvent(System.Int32)">
+            <summary>
+            Devolve um evento pela id
+            </summary>
+            <param name="id">id do evento</param>
+            <returns>Retorna um evento</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.GetTeamsByEventId(System.Int32)">
+            <summary>
+            Retorna as equipas presentes no evento
+            </summary>
+            <param name="id">id do evento</param>
+            <returns>Retorna uma lista de equipas</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.AddTeamToEvent(System.Int32,System.Int32)">
+            <summary>
+            Adiciona nova equipa ao evento
+            </summary>
+            <param name="idEvent">id do evento</param>
+            <param name="idTeam">id da equipa</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.RemoveTeamFromEvent(System.Int32,System.Int32)">
+            <summary>
+            Remove uma equipa do evento
+            </summary>
+            <param name="idEvent">id do evento</param>
+            <param name="idTeam">id da equipa</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.PutEvent(System.Int32,DATA.Entities.Event)">
+            <summary>
+            Edita um evento
+            </summary>
+            <param name="id">id do evento</param>
+            <param name="event">objeto com os dados alterados</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.PostEvent(DATA.Entities.Event)">
+            <summary>
+            Adiciona novo evento
+            </summary>
+            <param name="event">objeto do novo evento</param>
+            <returns>Retorna o evento</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.DeleteEvent(System.Int32)">
+            <summary>
+            Elimina um evento
+            </summary>
+            <param name="id">id do evento</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.EventsController.EventExists(System.Int32)">
+            <summary>
+            Verifica se existe um evento
+            </summary>
+            <param name="id">id do evento</param>
+            <returns>retorna retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.GetGames">
+            <summary>
+            Devolve todos os jogos
+            </summary>
+            <returns>Retorna uma lista de jogos</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.GetGame(System.Int32)">
+            <summary>
+            Devolve um jogo pela id
+            </summary>
+            <param name="id">id do jogo</param>
+            <returns>Retorna um jogo</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.GamesByEventId(System.Int32)">
+            <summary>
+            Devolve todos os jogos de um determinado evento
+            </summary>
+            <param name="id">id do evento</param>
+            <returns>Retorna uma lista de jogos</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.StatPlayerByGameId(System.Int32)">
+            <summary>
+            Devolve as estatisticas dos jogadores de um determinado evento
+            </summary>
+            <param name="id">id do jogo</param>
+            <returns>Retorna uma lista de estatisticas de jogadores</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.PutGame(System.Int32,DATA.Entities.Game)">
+            <summary>
+            Edita um jogo
+            </summary>
+            <param name="id">id do jogo</param>
+            <param name="game">objeto com o jogo alterado</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.PostGame(DATA.Entities.Game)">
+            <summary>
+            Adiciona novo jogo
+            </summary>
+            <param name="game">objeto com o novo jogo</param>
+            <returns>Retorna o novo jogo</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.DeleteGame(System.Int32)">
+            <summary>
+            Elimina um jogo
+            </summary>
+            <param name="id">id do jogo</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.GamesController.GameExists(System.Int32)">
+            <summary>
+            Verifica se existe um jogo
+            </summary>
+            <param name="id">id do jogo</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.LoginController.Authenticate(DATA.Jwt.Login)">
+            <summary>
+            Autentica um utilizador
+            </summary>
+            <param name="model">utilizador com user e password</param>
+            <returns>retorna um objeto com o token</returns>
+        </member>
+        <member name="M:Server.Controllers.MapOfGamesController.GetMapOfGame">
+            <summary>
+            Devolve os maps jogados em um jogo
+            </summary>
+            <returns>Retorna uma lista de mapas jogados</returns>
+        </member>
+        <member name="M:Server.Controllers.MapOfGamesController.GetMapOfGame(System.Int32)">
+            <summary>
+            Devolve o map jogado pelo id
+            </summary>
+            <param name="id">id do mapa jogado</param>
+            <returns>Retorna um mapa jogado</returns>
+        </member>
+        <member name="M:Server.Controllers.MapOfGamesController.MapOfGamesByGameId(System.Int32)">
+            <summary>
+            Devolve uma lista de mapas jogados pelo id do jogo
+            </summary>
+            <param name="id">id do jogo</param>
+            <returns>Retorna uma lista de mapas jogados</returns>
+        </member>
+        <member name="M:Server.Controllers.MapOfGamesController.PutMapOfGame(System.Int32,DATA.Entities.MapOfGame)">
+            <summary>
+            Edita um mapa jogado
+            </summary>
+            <param name="id">id do mapa jogado</param>
+            <param name="mapOfGame">objeto com o mapa jogado alterado</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.MapOfGamesController.PostMapOfGame(DATA.Entities.MapOfGame)">
+            <summary>
+            Adiciona novo mapa jogado
+            </summary>
+            <param name="mapOfGame">objeto com o novo mapa jogado</param>
+            <returns>Retorna o novo mapa jogado</returns>
+        </member>
+        <member name="M:Server.Controllers.MapOfGamesController.DeleteMapOfGame(System.Int32)">
+            <summary>
+            Elimina um mapa jogado pelo id
+            </summary>
+            <param name="id">id do mapa jogado</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.MapOfGamesController.MapOfGameExists(System.Int32)">
+            <summary>
+            Verifica se existe um mapa jogado
+            </summary>
+            <param name="id">id do mapa jogado</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.MapsController.GetMaps">
+            <summary>
+            Devolve os mapas
+            </summary>
+            <returns>Devolve uma lista de mapas</returns>
+        </member>
+        <member name="M:Server.Controllers.MapsController.GetMap(System.Int32)">
+            <summary>
+            Devolve mapa pelo id
+            </summary>
+            <param name="id">id do mapa</param>
+            <returns>Retorna um mapa</returns>
+        </member>
+        <member name="M:Server.Controllers.MapsController.PutMap(System.Int32,DATA.Entities.Map)">
+            <summary>
+            Edita um mapa
+            </summary>
+            <param name="id">id do mapa</param>
+            <param name="map">objeto com o mapa alterado</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.MapsController.PostMap(DATA.Entities.Map)">
+            <summary>
+            Adiciona novo mapa
+            </summary>
+            <param name="map">objeto com o novo mapa</param>
+            <returns>Retorna o mapa novo</returns>
+        </member>
+        <member name="M:Server.Controllers.MapsController.DeleteMap(System.Int32)">
+            <summary>
+            Elimina um mapa pelo id
+            </summary>
+            <param name="id">id do mapa</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.MapsController.MapExists(System.Int32)">
+            <summary>
+            Verifica se existe
+            </summary>
+            <param name="id">id do mapa</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.PlayersController.GetPlayers">
+            <summary>
+            Devolve todos os jogadores
+            </summary>
+            <returns>Retorna uma lista de jogadores</returns>
+        </member>
+        <member name="M:Server.Controllers.PlayersController.GetPlayer(System.Int32)">
+            <summary>
+            Devolve um jogador pelo seu id
+            </summary>
+            <param name="id">id do jogador</param>
+            <returns>Retorna um objeto do tipo jogador</returns>
+        </member>
+        <member name="M:Server.Controllers.PlayersController.PutPlayer(System.Int32,DATA.Entities.Player)">
+            <summary>
+            Edita um jogador
+            </summary>
+            <param name="id">id do jogador</param>
+            <param name="player">objeto com o jogador alterado</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.PlayersController.PostPlayer(DATA.Entities.Player)">
+            <summary>
+            Adiciona novo jogador
+            </summary>
+            <param name="player">Objeto com o novo jogador</param>
+            <returns>Retorna um objeto com o novo jogador</returns>
+        </member>
+        <member name="M:Server.Controllers.PlayersController.DeletePlayer(System.Int32)">
+            <summary>
+            Elimina o jogador pelo seu id
+            </summary>
+            <param name="id">id do jogador</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.PlayersController.PlayerExists(System.Int32)">
+            <summary>
+            Verifica se o jogador existe
+            </summary>
+            <param name="id">id do jogador</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.StatPlayerOnGameController.GetStatPlayerOnGame">
+            <summary>
+            Devolve todas as estatisticas dos jogadores
+            </summary>
+            <returns>Retorna uma lista de objetos com as estatisticas dos jogadores</returns>
+        </member>
+        <member name="M:Server.Controllers.StatPlayerOnGameController.GetStatPlayerOnGame(System.Int32)">
+            <summary>
+            Devolve uma estatistica pelo seu id
+            </summary>
+            <param name="id">id da estatistica</param>
+            <returns>Devolve um objeto com a estatistica</returns>
+        </member>
+        <member name="M:Server.Controllers.StatPlayerOnGameController.PutStatPlayerOnGame(System.Int32,DATA.Entities.StatPlayerOnGame)">
+            <summary>
+            Edita uma estatistica
+            </summary>
+            <param name="id">id da estatistica</param>
+            <param name="StatPlayerOnGame">objeto com a estatistica alterada</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.StatPlayerOnGameController.PostStatPlayerOnGame(DATA.Entities.StatPlayerOnGame)">
+            <summary>
+            Adiciona nova estatistica
+            </summary>
+            <param name="StatPlayerOnGame">Objeto com a nova estatistica</param>
+            <returns>Retorna um objeto com a nova estatistica</returns>
+        </member>
+        <member name="M:Server.Controllers.StatPlayerOnGameController.DeleteStatPlayerOnGame(System.Int32)">
+            <summary>
+            Elimina a estatistica pelo id
+            </summary>
+            <param name="id">id da estatistica</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.StatPlayerOnGameController.StatPlayerOnGameExists(System.Int32)">
+            <summary>
+            Verifica se a estatistica existe
+            </summary>
+            <param name="id">id da estatistica</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.GetTeams">
+            <summary>
+            Devolve todas as equipas
+            </summary>
+            <returns>Retorna uma lista com todas as equipas</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.GetTeam(System.Int32)">
+            <summary>
+            Devolve uma equipa pelo seu id
+            </summary>
+            <param name="id">id da equipa</param>
+            <returns>Retorna um objeto do tipo equipa</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.PutTeam(System.Int32,DATA.Entities.Team)">
+            <summary>
+            Edita uma equipa
+            </summary>
+            <param name="id">id da equipa</param>
+            <param name="team">objeto com a equipa alterada</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.PostTeam(DATA.Entities.Team)">
+            <summary>
+            Adiciona nova equipa
+            </summary>
+            <param name="team">objeto com a nova equipa</param>
+            <returns>Retorna um objeto com a nova equipa</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.AddPlayerToTeam(System.Int32,System.Int32)">
+            <summary>
+            Adiciona um jogado a uma equipa
+            </summary>
+            <param name="idTeam">id da equipa</param>
+            <param name="idPlayer">id do jogador</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.RemovePlayerFromTeam(System.Int32,System.Int32)">
+            <summary>
+            Remove jogador da equipa
+            </summary>
+            <param name="idTeam">id da equipa</param>
+            <param name="idPlayer">id do jogador</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.DeleteTeam(System.Int32)">
+            <summary>
+            Elimina equipa pelo seu id
+            </summary>
+            <param name="id">id da equipa</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.TeamsController.TeamExists(System.Int32)">
+            <summary>
+            Verifica se a equipa existe pelo id
+            </summary>
+            <param name="id">id da equipa</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.GetUsers">
+            <summary>
+            Devolve todos os utilizadores
+            </summary>
+            <returns>Devolve uma lista com todos os utilizadores</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.GetUser(System.Int32)">
+            <summary>
+            Devolve um utilizador pela id
+            </summary>
+            <param name="id">id do utilizador</param>
+            <returns>Retorna um utilizador</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.PutUser(System.Int32,DATA.Entities.User)">
+            <summary>
+            Edita um utilizador
+            </summary>
+            <param name="id">id do utilizador</param>
+            <param name="user">objeto com o utilizador alterado</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.PostUser(DATA.Entities.User)">
+            <summary>
+            Adiciona novo utilizador
+            </summary>
+            <param name="user">objeto com o novo utilizador</param>
+            <returns>Retorna um objeto com o novo utilizador</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.DeleteUser(System.Int32)">
+            <summary>
+            Elimina um utilizador pela id
+            </summary>
+            <param name="id">id do utilizador</param>
+            <returns>Retorna o resultado</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.GetRoles">
+            <summary>
+            Devolve todas as roles existentes
+            </summary>
+            <returns>Retorna uma lista com todas as roles</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.UserExists(System.Int32)">
+            <summary>
+            Verifica se o utilizador existe
+            </summary>
+            <param name="id">id do utilizador</param>
+            <returns>Retorna true/false</returns>
+        </member>
+        <member name="M:Server.Controllers.UsersController.CheckUserRoles(System.String)">
+            <summary>
+            Devolve a role com o nome formatado
+            </summary>
+            <param name="uRoles">role desformatada</param>
+            <returns>Retorna uma string</returns>
+        </member>
     </members>
 </doc>

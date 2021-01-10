@@ -18,7 +18,7 @@ namespace Server.Jwt
     {
         public static UserToken GenerateToken(User user, IConfiguration config)
         {
-            var expire = DateTime.UtcNow.AddHours(Convert.ToInt32(config["Jwt:Expiration"]));
+            var expire = DateTime.UtcNow.AddSeconds(Convert.ToInt32(config["Jwt:Expiration"]));
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Secret"]));
             var identity = new ClaimsIdentity(
@@ -27,7 +27,9 @@ namespace Server.Jwt
                         {
                             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), //jti 0 id do token
                             new Claim(JwtRegisteredClaimNames.UniqueName, user.Username),
-                            new Claim(ClaimTypes.Role, user.Role)
+                            new Claim(ClaimTypes.Expired, expire.ToString()),
+                            new Claim(ClaimTypes.Role, user.Role),
+                            new Claim(ClaimTypes.Expiration, expire.ToString())
                         }
                     );
 
@@ -49,32 +51,6 @@ namespace Server.Jwt
 
             var token = handler.WriteToken(securityToken);
             return token;
-        }
-
-        public static string? ValidateJwtToken(string token, IConfiguration config)
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config["Jwt:Secret"]));
-            try
-            {
-                tokenHandler.ValidateToken(token, new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = key,
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ClockSkew = TimeSpan.Zero
-                }, out SecurityToken validatedToken);
-
-                var jwtToken = (JwtSecurityToken)validatedToken;
-                var username = jwtToken.Claims.First(x => x.Type == JwtRegisteredClaimNames.UniqueName).Value;
-
-                return username;
-            }
-            catch
-            {
-                return null;
-            }
         }
     }
 }

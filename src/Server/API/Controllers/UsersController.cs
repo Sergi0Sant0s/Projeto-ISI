@@ -27,7 +27,11 @@ namespace Server.Controllers
             _config = config;
         }
 
-        // GET: Users
+
+        /// <summary>
+        /// Devolve todos os utilizadores
+        /// </summary>
+        /// <returns>Devolve uma lista com todos os utilizadores</returns>
         [Authorize("Bearer")]
         [Authorize(Roles = UserRoles.Admin)]
         [HttpGet]
@@ -36,7 +40,12 @@ namespace Server.Controllers
             return await _context.Users.ToListAsync();
         }
 
-        // GET: Users/5
+        
+        /// <summary>
+        /// Devolve um utilizador pela id
+        /// </summary>
+        /// <param name="id">id do utilizador</param>
+        /// <returns>Retorna um utilizador</returns>
         [Authorize("Bearer")]
         [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("{id}")]
@@ -52,8 +61,13 @@ namespace Server.Controllers
             return user;
         }
 
-        // PUT: api/Users/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Edita um utilizador
+        /// </summary>
+        /// <param name="id">id do utilizador</param>
+        /// <param name="user">objeto com o utilizador alterado</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPut("{id}")]
@@ -85,8 +99,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: api/Users
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Adiciona novo utilizador
+        /// </summary>
+        /// <param name="user">objeto com o novo utilizador</param>
+        /// <returns>Retorna um objeto com o novo utilizador</returns>
         [Authorize("Bearer")]
         [Authorize(Roles = UserRoles.Admin)]
         [HttpPost]
@@ -98,7 +116,12 @@ namespace Server.Controllers
             return CreatedAtAction("GetUser", new { id = user.UserId }, user);
         }
 
-        // DELETE: api/Users/5
+
+        /// <summary>
+        /// Elimina um utilizador pela id
+        /// </summary>
+        /// <param name="id">id do utilizador</param>
+        /// <returns>Retorna o resultado</returns>
         [Authorize("Bearer")]
         [Authorize(Roles = UserRoles.Admin)]
         [HttpDelete("{id}")]
@@ -116,20 +139,36 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // DELETE: Users
+
+        /// <summary>
+        /// Devolve todas as roles existentes
+        /// </summary>
+        /// <returns>Retorna uma lista com todas as roles</returns>
         [Authorize("Bearer")]
         [Authorize(Roles = UserRoles.Admin)]
         [HttpGet("roles")]
         public async Task<ActionResult<object>> GetRoles()
         {
-            return new string[] { UserRoles.Admin.ToString(), UserRoles.User.ToString() };
+            return new string[] { UserRoles.User.ToString(), UserRoles.Convidado.ToString() };
         }
 
+
+        /// <summary>
+        /// Verifica se o utilizador existe
+        /// </summary>
+        /// <param name="id">id do utilizador</param>
+        /// <returns>Retorna true/false</returns>
         private bool UserExists(int id)
         {
             return _context.Users.Any(e => e.UserId == id);
         }
 
+
+        /// <summary>
+        /// Devolve a role com o nome formatado
+        /// </summary>
+        /// <param name="uRoles">role desformatada</param>
+        /// <returns>Retorna uma string</returns>
         private string CheckUserRoles(string uRoles)
         {
             switch (uRoles.ToUpper())

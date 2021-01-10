@@ -25,18 +25,27 @@ namespace Server.Controllers
             _context = context;
         }
 
-        // GET: Events
+
+        /// <summary>
+        /// Devolve todos os eventos
+        /// </summary>
+        /// <returns>Retorna uma lista com todos os eventos</returns>
         [HttpGet]
-        [Authorize("Bearer")]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
         {
+            var aux = HttpContext.User;
             return await _context.Events.ToListAsync();
         }
 
-        // GET: Events/5
 
+        /// <summary>
+        /// Devolve um evento pela id
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna um evento</returns>
         [HttpGet("{id}")]
-        [Authorize("Bearer")]
+        [AllowAnonymous]
         public async Task<ActionResult<Event>> GetEvent(int id)
         {
             var @event = await _context.Events.FindAsync(id);
@@ -49,15 +58,27 @@ namespace Server.Controllers
             return @event;
         }
 
+
+        /// <summary>
+        /// Retorna as equipas presentes no evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna uma lista de equipas</returns>
         [HttpGet("GetTeamsByEventId/{id}")]
-        [Authorize("Bearer")]
+        [AllowAnonymous]
         public async Task<ICollection<Team>> GetTeamsByEventId(int id)
         {
             var teams = _context.Events.Include("Teams").FirstOrDefault(a => a.EventId == id).Teams;
-
             return teams;
         }
 
+
+        /// <summary>
+        /// Adiciona nova equipa ao evento
+        /// </summary>
+        /// <param name="idEvent">id do evento</param>
+        /// <param name="idTeam">id da equipa</param>
+        /// <returns>Retorna true/false</returns>
         [HttpPost("AddTeamToEvent")]
         [Authorize("Bearer")]
         public async Task<bool> AddTeamToEvent(int idEvent, int idTeam)
@@ -76,6 +97,13 @@ namespace Server.Controllers
             }
         }
 
+
+        /// <summary>
+        /// Remove uma equipa do evento
+        /// </summary>
+        /// <param name="idEvent">id do evento</param>
+        /// <param name="idTeam">id da equipa</param>
+        /// <returns>Retorna true/false</returns>
         [HttpPost("RemoveTeamFromEvent")]
         [Authorize("Bearer")]
         public async Task<bool> RemoveTeamFromEvent(int idEvent, int idTeam)
@@ -97,8 +125,13 @@ namespace Server.Controllers
             }
         }
 
-        // PUT: Events/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Edita um evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <param name="event">objeto com os dados alterados</param>
+        /// <returns>Retorna o resultado</returns>
         [HttpPut("{id}")]
         [Authorize("Bearer")]
         public async Task<IActionResult> PutEvent(int id, Event @event)
@@ -129,8 +162,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
-        // POST: Events
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+
+        /// <summary>
+        /// Adiciona novo evento
+        /// </summary>
+        /// <param name="event">objeto do novo evento</param>
+        /// <returns>Retorna o evento</returns>
         [HttpPost]
         [Authorize("Bearer")]
         public async Task<ActionResult<Event>> PostEvent(Event @event)
@@ -141,7 +178,12 @@ namespace Server.Controllers
             return CreatedAtAction("GetEvent", new { id = @event.EventId }, @event);
         }
 
-        // DELETE: Events/5
+
+        /// <summary>
+        /// Elimina um evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>Retorna o resultado</returns>
         [HttpDelete("{id}")]
         [Authorize("Bearer")]
         public async Task<IActionResult> DeleteEvent(int id)
@@ -158,6 +200,12 @@ namespace Server.Controllers
             return NoContent();
         }
 
+
+        /// <summary>
+        /// Verifica se existe um evento
+        /// </summary>
+        /// <param name="id">id do evento</param>
+        /// <returns>retorna retorna true/false</returns>
         private bool EventExists(int id)
         {
             return _context.Events.Any(e => e.EventId == id);
